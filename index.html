@@ -170,7 +170,7 @@ textarea.finp{resize:vertical;min-height:72px;line-height:1.5}
 <div class="chip" onclick="setFilter('contrato')" id="ch-contrato">📝 Contrato</div>
 <div class="chip" onclick="setFilter('firmado')" id="ch-firmado">✅ Firmado</div>
 <div class="chip" onclick="setFilter('activo')" id="ch-activo">🟢 Activo</div>
-<div class="chip" onclick="setFilter('descartado')" id="ch-descartado">❌ Desc.</div>
+<div class="chip" onclick="setFilter('descartado')" id="ch-descartado">❌ Desc.</div><div class="chip" onclick="setFilter('sponsor',-1,'sponsor')" id="ch-sponsor" style="border-color:rgba(168,85,247,0.35);color:#A855F7">🎯 Sponsors</div>
 </div>
 <div id="co-list"></div><div class="safe"></div></div>
 <button class="fab" onclick="openAddCompany()">+</button></div>
@@ -220,7 +220,7 @@ textarea.finp{resize:vertical;min-height:72px;line-height:1.5}
 <option value="aerolinea">✈️ Aerolínea</option><option value="autobus">🚌 Empresa de Autobús</option>
 <option value="tren">🚂 Empresa de Tren</option><option value="crucero">🚢 Crucero / Ferry</option>
 <option value="hotel">🏨 Hotel / Resort</option><option value="bar">🍺 Bar / Restaurante</option>
-<option value="retail">🏪 Retail / Tienda</option><option value="otro">🏢 Otro</option></select></div>
+<option value="retail">🏪 Retail / Tienda</option><option value="otro">🏢 Otro</option><option value="sponsor">🎯 Patrocinador / Sponsor</option></select></div>
 <div id="sector-fields"></div>
 <div class="grid2">
 <div class="fgrp"><label class="flbl">País</label><input class="finp" id="f-country" value="España"></div>
@@ -326,7 +326,7 @@ function save(){localStorage.setItem(LS_CO,JSON.stringify(companies));localStora
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 const SL={Candidato:'Candidato',contactado:'Contactado',presentado:'Presentado',reunion:'Reunión',propuesta:'Propuesta env.',negociando:'Negociando',contrato:'Contrato env.',firmado:'Firmado',activo:'Activo',descartado:'Descartado'};
 const SE={Candidato:'🔵',contactado:'📧',presentado:'📄',reunion:'🤝',propuesta:'💼',negociando:'🔄',contrato:'📝',firmado:'✅',activo:'🟢',descartado:'❌'};
-const SEC={aerolinea:'✈️',autobus:'🚌',tren:'🚂',crucero:'🚢',hotel:'🏨',bar:'🍺',retail:'🏪',otro:'🏢'};
+const SEC={aerolinea:'✈️',autobus:'🚌',tren:'🚂',crucero:'🚢',hotel:'🏨',bar:'🍺',retail:'🏪',otro:'🏢',sponsor:'🎯'};
 const IT={email:'📧',llamada:'📞',whatsapp:'💬',reunion:'🤝',videollamada:'📹',nota:'📝'};
 const PC={Candidato:'var(--purple)',contactado:'var(--cyan)',presentado:'#FFA500',reunion:'var(--indigo)',propuesta:'var(--gold)',negociando:'#00D4FF',contrato:'#4ADE80',firmado:'var(--success)',activo:'var(--success)',descartado:'var(--danger)'};
 const STAGES=['Candidato','contactado','presentado','reunion','propuesta','negociando','contrato','firmado','activo','descartado'];
@@ -1110,7 +1110,191 @@ renderDash=function(){
     else{const statsEl=document.getElementById('dash-stats');if(statsEl)statsEl.after(div);}
   },100);
 };
+// ===== PATCH SPONSOR/PATROCINADOR =====
+
+// Sponsor sector fields
+const SPONSOR_FIELDS=`
+  <div class="fgrp"><label class="flbl">Tipo de marca</label>
+    <select class="finp" id="f-brand-type">
+      <option value="moda">👗 Moda / Ropa</option>
+      <option value="tech">💻 Tecnología / Electrónica</option>
+      <option value="viajes">✈️ Viajes / Turismo</option>
+      <option value="cosmetica">💄 Cosmética / Belleza</option>
+      <option value="alimentacion">🍽 Alimentación / Bebidas</option>
+      <option value="banca">🏦 Banca / Seguros</option>
+      <option value="auto">🚗 Automoción</option>
+      <option value="deporte">⚽ Deporte / Fitness</option>
+      <option value="otro">🎯 Otro</option>
+    </select></div>
+  <div class="grid2">
+    <div class="fgrp"><label class="flbl">Presupuesto estimado (€/año)</label><input class="finp" id="f-budget" type="number" placeholder="10000"></div>
+    <div class="fgrp"><label class="flbl">Decisor</label><input class="finp" id="f-decision" placeholder="Dir. Marketing, CMO..."></div>
+  </div>
+  <div class="fgrp"><label class="flbl">Tipo de patrocinio buscado</label>
+    <select class="finp" id="f-spon-type">
+      <option value="pack-premio">🏆 Pack de premio (su marca = el premio)</option>
+      <option value="logo-pack">📦 Logo en packaging del pack</option>
+      <option value="banner-app">📱 Banner en app PremiosRed</option>
+      <option value="sorteo">🎰 Presencia en sorteo (evento)</option>
+      <option value="email">📧 Mención en emails a usuarios</option>
+      <option value="combo">🔗 Combo múltiple</option>
+    </select></div>
+`;
+
+// Add sponsor to SECTOR_FIELDS
+if(typeof SECTOR_FIELDS!=='undefined'){SECTOR_FIELDS['sponsor']=SPONSOR_FIELDS}
+else{window.SECTOR_FIELDS=window.SECTOR_FIELDS||{};window.SECTOR_FIELDS['sponsor']=SPONSOR_FIELDS}
+
+// Override onSectorChange to handle sponsor
+const __origSectorChange=onSectorChange;
+onSectorChange=function(v){
+  if(v==='sponsor'){
+    const sf=document.getElementById('sector-fields');
+    if(sf)sf.innerHTML=SPONSOR_FIELDS;
+    const ct=document.getElementById('contract-fields');
+    if(ct)ct.style.display=['firmado','activo','contrato'].includes(document.getElementById('f-status')?.value||'')?'block':'none';
+    return;
+  }
+  __origSectorChange(v);
+};
+
+// IMPACT CALCULATOR for sponsors
+function calcImpact(co){
+  const budget=parseInt(co.budget)||0;
+  const sponsType=co.sponType||'pack-premio';
+  // Estimated pack volume (based on signed collaborators)
+  const signedCo=companies.filter(c=>['firmado','activo'].includes(c.status)&&c.sector!=='sponsor');
+  const totalPacks=signedCo.reduce((s,c)=>s+(parseInt(c.minpacks)||50),0);
+  const impacts={
+    'pack-premio':{impressions:totalPacks*12,desc:'impresiones/año (usuarios que abren el pack y ven la marca)'},
+    'logo-pack':{impressions:totalPacks*24,desc:'impresiones/año (pack físico visto por usuario + entorno)'},
+    'banner-app':{impressions:totalPacks*5*365,desc:'impresiones/año (usuarios activos en app)'},
+    'sorteo':{impressions:5000,desc:'espectadores directos por sorteo + cobertura digital'},
+    'email':{impressions:totalPacks*4,desc:'impresiones/año (emails enviados a base de usuarios)'},
+    'combo':{impressions:totalPacks*30,desc:'impresiones combinadas/año'},
+  };
+  const imp=impacts[sponsType]||impacts['pack-premio'];
+  const cpm=budget&&imp.impressions?Math.round(budget/(imp.impressions/1000)):0;
+  return{...imp,totalPacks,cpm,budget};
+}
+
+// Override renderDetail to add impact calculator for sponsors
+const __origRD_spon=renderDetail;
+renderDetail=function(id){
+  __origRD_spon(id);
+  setTimeout(()=>{
+    const co=companies.find(c=>c.id===id);
+    if(!co||co.sector!=='sponsor')return;
+    const det=document.getElementById('det-body');if(!det)return;
+    if(det.querySelector('#sponsor-impact'))return;
+    const impact=calcImpact(co);
+    const card=document.createElement('div');
+    card.id='sponsor-impact';
+    card.style.cssText='background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(99,102,241,0.06));border:1px solid rgba(168,85,247,0.22);border-radius:var(--r);padding:15px;margin-bottom:12px';
+    card.innerHTML=`
+      <div style="font-size:11px;font-weight:800;color:#A855F7;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">📊 Calculadora de impacto publicitario</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div style="text-align:center;background:rgba(255,255,255,0.7);border-radius:10px;padding:12px">
+          <div style="font-size:24px;font-weight:900;color:#A855F7">${impact.impressions.toLocaleString('es-ES')}</div>
+          <div style="font-size:10px;color:rgba(30,50,90,0.5);margin-top:3px;font-weight:700">${impact.desc}</div>
+        </div>
+        <div style="text-align:center;background:rgba(255,255,255,0.7);border-radius:10px;padding:12px">
+          <div style="font-size:24px;font-weight:900;color:var(--gold)">${impact.cpm?'€'+impact.cpm:'—'}</div>
+          <div style="font-size:10px;color:rgba(30,50,90,0.5);margin-top:3px;font-weight:700">CPM (coste por 1.000 impresiones)</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:rgba(30,50,90,0.55);line-height:1.6">
+        <div class="mb4">📦 Packs/mes activos en red: <strong>${impact.totalPacks.toLocaleString('es-ES')}</strong></div>
+        <div class="mb4">💰 Presupuesto estimado: <strong>€${(impact.budget||0).toLocaleString('es-ES')}/año</strong></div>
+        <div>🎯 Tipo: <strong>${({
+          'pack-premio':'Premio de la marca','logo-pack':'Logo en pack','banner-app':'Banner en app',
+          'sorteo':'Presencia en sorteo','email':'Email a usuarios','combo':'Combo múltiple'
+        })[co.sponType||'pack-premio']}</strong></div>
+      </div>
+    `;
+    const firstCard=det.querySelector('.card');
+    if(firstCard)firstCard.after(card);
+  },80);
+};
+
+// Override saveCompany to save sponsor-specific fields
+const __origSC_spon=saveCompany;
+saveCompany=function(){
+  const sector=document.getElementById('f-sector')?.value;
+  const prevLen=companies.length;
+  const editingId=editId;
+  __origSC_spon();
+  // Enrich with sponsor data if applicable
+  if(sector==='sponsor'){
+    const co=editingId?companies.find(c=>c.id===editingId):companies[companies.length-1];
+    if(co){
+      co.budget=document.getElementById('f-budget')?.value||'';
+      co.sponType=document.getElementById('f-spon-type')?.value||'pack-premio';
+      co.brandType=document.getElementById('f-brand-type')?.value||'otro';
+      co.decisionMaker=document.getElementById('f-decision')?.value||'';
+      save();
+    }
+  }
+};
+
+// Add sponsor to PITCH_SECTOR if defined
+if(typeof PITCH_SECTOR!=='undefined'){
+  PITCH_SECTOR['sponsor']={
+    titulo:'🎯 Pitch Patrocinadores',
+    puntos:[
+      'PremiosRed = canal de distribución a viajeros de alto poder adquisitivo',
+      'Tu marca ES el premio → asociación premium en la mente del usuario',
+      'CPM competitivo vs publicidad digital tradicional (meta/google)',
+      'Presencia en 17 países europeos con un solo acuerdo',
+      'Impacto en momentos de alta receptividad (vuelo, hotel, trayecto)',
+      'RSC incluido: 2% solidario refuerza imagen de marca responsable',
+      'Datos de conversión: usuario que abre pack → 100% de atención en la marca'
+    ]
+  };
+}
+
+// Sponsor email templates override
+const __origEM_spon=openEmailModal;
+openEmailModal=function(id){
+  __origEM_spon(id);
+  const co=companies.find(c=>c.id===id);
+  if(!co||co.sector!=='sponsor')return;
+  // Add sponsor-specific templates
+  setTimeout(()=>{
+    const tpls=document.getElementById('em-tpls');if(!tpls||tpls.dataset.spon)return;
+    tpls.dataset.spon='1';
+    const to=co.contactEmail||'',cn=co.contactName||'',nm=co.name||'';
+    const from='info@premiosred.com';
+    const sponTpls=[
+      {n:'🎯 Propuesta patrocinio — presentación',s:`${nm} × PremiosRed — Propuesta de patrocinio`,b:`Estimado/a ${cn},\n\nMe dirijo a usted para presentarle una oportunidad de patrocinio única que permitirá a ${nm} alcanzar a viajeros europeos de alto poder adquisitivo en un momento de máxima receptividad.\n\n🏆 PremiosRed en cifras:\n• Red activa en 17 países europeos\n• Presencia en aerolíneas, hoteles, trenes y autobuses premium\n• Usuario final: viajero con +€45k renta anual media\n• Sorteos de hasta €20.000 (cobertura mediática incluida)\n\n🎯 Propuesta para ${nm}:\nSu marca como PREMIO en nuestros packs significa:\n✓ 100% de atención del usuario (su marca ES el premio)\n✓ Asociación premium y aspiracional\n✓ Impresiones en contexto de alta receptividad\n✓ CPM muy por debajo de publicidad digital estándar\n✓ 2% solidario: refuerzo de imagen RSC\n\n¿Podemos agendar una llamada de 20 minutos para presentarle el dossier completo de impactos?\n\nAtentamente,\nPremiosRed | ${from}`},
+      {n:'📊 Dossier de impactos publicitarios',s:`Dossier impactos ${nm} × PremiosRed`,b:`Estimado/a ${cn},\n\nConforme acordado, adjunto el dossier de impactos publicitarios para ${nm}.\n\n📊 ESTIMACIÓN DE IMPACTOS (anual):\n• Impresiones directas en packs: [X.XXX.XXX]\n• Alcance en app PremiosRed: [XXX.XXX usuarios]\n• Presencia en sorteos: [X eventos/año]\n• CPM estimado: €[X] (vs €[Y] mercado digital)\n• Países: 17 europeos\n\n💼 INVERSIÓN PROPUESTA:\n• Modalidad: [Pack Premio / Logo / Banner / Combo]\n• Inversión: €[XXX] / [año / campaña]\n• Duración: [X meses]\n• Exclusividad sectorial: [Sí/No]\n\nQuedo a su disposición para cualquier ajuste.\n\nAtentamente,\nPremiosRed | ${from}`},
+    ];
+    // Insert at beginning
+    const existing=tpls.innerHTML;
+    tpls.innerHTML=sponTpls.map(t=>{const ml=`mailto:${to}?subject=${encodeURIComponent(t.s)}&body=${encodeURIComponent(t.b)}`;return`<div class="card card-sm mb8" style="border-color:rgba(168,85,247,0.28)"><div class="fw700 f13 mb4" style="color:#A855F7">${t.n}</div><div class="f11 clr-muted mb8">${t.s}</div><a href="${ml}" class="btn btn-sm" style="display:inline-flex;text-decoration:none;background:rgba(168,85,247,0.10);border:1px solid rgba(168,85,247,0.28);color:#A855F7">Abrir email →</a></div>`}).join('')+existing;
+  },150);
+};
+
+// Add sponsor filter chip functionality
+const __origSetFilter=setFilter;
+setFilter=function(v,_,sectorFilter){
+  if(sectorFilter==='sponsor'){
+    filterSt='';
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    document.getElementById('ch-sponsor')?.classList.add('on');
+    // Filter by sector
+    let list=companies.filter(c=>c.sector==='sponsor');
+    document.getElementById('co-count-lbl').textContent=`${list.length} patrocinador${list.length!==1?'es':''}`;
+    const el=document.getElementById('co-list');
+    if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🎯</div><div class="empty-msg">Sin patrocinadores aún.</div></div>`;return}
+    el.innerHTML=list.map(co=>{const n=interactions.filter(i=>i.coId===co.id).length;return`<div class="co-row pr-${co.priority}" onclick="goToDetail('${co.id}')"><div class="row mb6"><span class="sector-badge" style="background:rgba(168,85,247,0.10);color:#A855F7;border-color:rgba(168,85,247,0.25)">🎯 Sponsor</span><span class="co-name flex1">${esc(co.name)}</span>${stBadge(co.status)}</div><div class="row wrap" style="gap:6px"><span class="f12 clr-muted flex1">${esc(co.contactName||'')} · €${parseInt(co.budget||0).toLocaleString('es-ES')}/año</span><span class="f11 clr-dim">${n} logs</span></div></div>`}).join('');
+    return;
+  }
+  __origSetFilter(v);
+};
 </script></body></html>
+
+
 
 
 
