@@ -1,458 +1,613 @@
-﻿<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#08101e">
-<meta name="apple-mobile-web-app-capable" content="yes">
+﻿<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#08101e"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CRM·PR">
-<meta name="description" content="CRM Comercial PremiosRed — Pipeline de colaboradores">
 <link rel="manifest" href="manifest.json">
 <title>CRM · PremiosRed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --gold:#F5A623;--gold-l:#FFD166;--cyan:#38BDF8;--indigo:#6366F1;--purple:#818CF8;
-  --success:#22C55E;--danger:#EF4444;--warn:#F59E0B;
-  --bg:#08101e;--card:rgba(255,255,255,0.06);--card-h:rgba(255,255,255,0.10);
-  --glass:rgba(8,16,30,0.85);--border:rgba(255,255,255,0.09);
-  --bcyan:rgba(56,189,248,0.18);--bgold:rgba(245,166,35,0.20);
-  --text:#F0F4FF;--muted:rgba(220,230,255,0.55);--dim:rgba(200,215,255,0.28);
-  --r:16px;--rs:10px;--font:'Plus Jakarta Sans',Inter,sans-serif;
-  --tr:0.25s cubic-bezier(0.4,0,0.2,1);
-}
+:root{--gold:#F5A623;--gold-l:#FFD166;--cyan:#38BDF8;--indigo:#6366F1;--purple:#818CF8;--success:#22C55E;--danger:#EF4444;--warn:#F59E0B;--bg:#08101e;--card:rgba(255,255,255,0.06);--card-h:rgba(255,255,255,0.10);--glass:rgba(8,16,30,0.88);--border:rgba(255,255,255,0.09);--bcyan:rgba(56,189,248,0.18);--text:#F0F4FF;--muted:rgba(220,230,255,0.55);--dim:rgba(200,215,255,0.26);--r:16px;--rs:10px;--font:'Plus Jakarta Sans',Inter,sans-serif;--tr:0.22s cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased}
-body{background:radial-gradient(ellipse 110% 70% at 0% 0%,rgba(56,189,248,0.14) 0%,transparent 52%),radial-gradient(ellipse 90% 65% at 100% 0%,rgba(99,102,241,0.18) 0%,transparent 52%),radial-gradient(ellipse 90% 70% at 100% 100%,rgba(245,166,35,0.13) 0%,transparent 52%),linear-gradient(160deg,#08101e 0%,#0a1628 35%,#0e1535 65%,#080e1c 100%)}
-#app{height:100vh;display:flex;flex-direction:column;overflow:hidden;position:relative}
-.scr{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(20px);transition:opacity var(--tr),transform var(--tr)}
+body{background:radial-gradient(ellipse 120% 70% at 0% 0%,rgba(56,189,248,0.13) 0%,transparent 50%),radial-gradient(ellipse 90% 60% at 100% 0%,rgba(99,102,241,0.17) 0%,transparent 50%),radial-gradient(ellipse 90% 65% at 100% 100%,rgba(245,166,35,0.12) 0%,transparent 50%),linear-gradient(160deg,#08101e 0%,#0a1628 35%,#0e1535 65%,#080e1c 100%);min-height:100vh}
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(18px);transition:opacity var(--tr),transform var(--tr)}
 .scr.act{opacity:1;pointer-events:all;transform:translateX(0)}
-.scr.exit{opacity:0;transform:translateX(-20px)}
-/* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid var(--bcyan);flex-shrink:0;z-index:10}
+.scr.exit{opacity:0;transform:translateX(-18px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid var(--bcyan);flex-shrink:0;z-index:10}
 .hdr-logo{display:flex;align-items:center;gap:10px}
-.hdr-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#000;box-shadow:0 0 20px rgba(245,166,35,0.4);flex-shrink:0}
-.hdr-title{font-size:17px;font-weight:800;letter-spacing:-0.3px}
-.hdr-title em{color:var(--gold);font-style:normal}
-.hdr-sub{font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
-/* NAV */
-.nav{display:flex;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid var(--bcyan);flex-shrink:0;z-index:10;padding-bottom:env(safe-area-inset-bottom,0)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 10px;background:none;border:none;color:var(--muted);cursor:pointer;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:0.3px;transition:color var(--tr);position:relative}
-.nav-btn.on{color:var(--cyan)}
-.nav-btn .badge{position:absolute;top:6px;right:calc(50% - 16px);background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.nav-btn svg{width:22px;height:22px;stroke-width:2;stroke:currentColor;fill:none}
-/* CONTENT */
-.cnt{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.cnt::-webkit-scrollbar{width:4px}
-.cnt::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--r);backdrop-filter:blur(16px);box-shadow:0 2px 12px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.05);transition:var(--tr);padding:16px}
-.card:hover{background:var(--card-h);border-color:rgba(56,189,248,0.28)}
-.card-sm{padding:12px}
-/* BUTTONS */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border:none;border-radius:var(--r);font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:var(--tr);width:100%;text-decoration:none}
-.btn-gold{background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);color:#0a0a0a;box-shadow:0 4px 24px rgba(245,166,35,0.40)}
-.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn-gold:active{transform:scale(0.97)}
-.btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--muted)}
-.btn-ghost:hover{background:var(--card-h);color:var(--text)}
-.btn-cyan{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.25);color:var(--cyan)}
-.btn-danger{background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.28);color:var(--danger)}
-.btn-sm{padding:8px 14px;font-size:13px;border-radius:var(--rs);width:auto}
-.btn-xs{padding:5px 10px;font-size:11px;font-weight:700;border-radius:8px;width:auto}
-/* FORMS */
-.fgrp{margin-bottom:14px}
-.flbl{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:0.8px;text-transform:uppercase}
-.finp{width:100%;padding:13px 15px;background:rgba(8,16,30,0.65);border:1px solid var(--bcyan);border-radius:var(--rs);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:var(--tr);-webkit-appearance:none;appearance:none}
-.finp:focus{border-color:var(--cyan);background:rgba(56,189,248,0.05);box-shadow:0 0 0 3px rgba(56,189,248,0.12)}
-.finp::placeholder{color:var(--dim)}
+.hdr-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#000;box-shadow:0 0 18px rgba(245,166,35,0.4);flex-shrink:0}
+.hdr-title{font-size:16px;font-weight:800;letter-spacing:-0.3px}.hdr-title em{color:var(--gold);font-style:normal}
+.hdr-sub{font-size:10px;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase;margin-top:1px}
+.nav{display:flex;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid var(--bcyan);flex-shrink:0;z-index:10;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 9px;background:none;border:none;color:var(--muted);cursor:pointer;font-family:var(--font);font-size:9px;font-weight:700;letter-spacing:0.3px;transition:color var(--tr);position:relative}
+.nav-btn.on{color:var(--cyan)}.nav-btn svg{width:20px;height:20px;stroke-width:2;stroke:currentColor;fill:none}
+.badge{position:absolute;top:5px;right:calc(50% - 18px);background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.cnt{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.cnt::-webkit-scrollbar{width:4px}.cnt::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.card{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--r);backdrop-filter:blur(14px);box-shadow:0 2px 12px rgba(0,0,0,0.22),inset 0 1px 0 rgba(255,255,255,0.04);transition:var(--tr);padding:15px}
+.card:hover{background:var(--card-h)}.card-sm{padding:11px}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 18px;border:none;border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:var(--tr);width:100%;text-decoration:none;letter-spacing:-0.2px}
+.btn-gold{background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);color:#0a0a0a;box-shadow:0 4px 20px rgba(245,166,35,0.38)}.btn-gold:hover{filter:brightness(1.07);transform:translateY(-1px)}.btn-gold:active{transform:scale(0.97)}
+.btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--muted)}.btn-ghost:hover{background:var(--card-h);color:var(--text)}
+.btn-cyan{background:rgba(56,189,248,0.11);border:1px solid rgba(56,189,248,0.24);color:var(--cyan)}
+.btn-green{background:rgba(34,197,94,0.11);border:1px solid rgba(34,197,94,0.24);color:var(--success)}
+.btn-danger{background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.26);color:var(--danger)}
+.btn-sm{padding:7px 13px;font-size:12px;border-radius:var(--rs);width:auto}.btn-xs{padding:4px 9px;font-size:11px;border-radius:7px;width:auto;font-weight:700}
+.fgrp{margin-bottom:13px}
+.flbl{display:block;font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;letter-spacing:0.9px;text-transform:uppercase}
+.finp{width:100%;padding:12px 14px;background:rgba(8,16,30,0.65);border:1px solid var(--bcyan);border-radius:var(--rs);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:var(--tr);-webkit-appearance:none;appearance:none}
+.finp:focus{border-color:var(--cyan);background:rgba(56,189,248,0.05);box-shadow:0 0 0 3px rgba(56,189,248,0.11)}.finp::placeholder{color:var(--dim)}
 select.finp option{background:#0e1535;color:var(--text)}
-textarea.finp{resize:vertical;min-height:80px;line-height:1.5}
-/* STATUS */
-.st{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.3px;white-space:nowrap}
-.st-prospecto{background:rgba(129,140,248,0.15);color:var(--purple);border:1px solid rgba(129,140,248,0.28)}
-.st-contactado{background:rgba(56,189,248,0.12);color:var(--cyan);border:1px solid rgba(56,189,248,0.25)}
-.st-respondio{background:rgba(245,166,35,0.12);color:var(--gold);border:1px solid rgba(245,166,35,0.28)}
-.st-negociando{background:rgba(99,102,241,0.14);color:var(--indigo);border:1px solid rgba(99,102,241,0.28)}
-.st-firmado{background:rgba(34,197,94,0.12);color:var(--success);border:1px solid rgba(34,197,94,0.28)}
-.st-descartado{background:rgba(239,68,68,0.10);color:var(--danger);border:1px solid rgba(239,68,68,0.25)}
-/* INTERACTION TYPE */
-.it{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600;background:var(--card);border:1px solid var(--border)}
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--tr)}
+textarea.finp{resize:vertical;min-height:72px;line-height:1.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.2px;white-space:nowrap}
+.st-prospecto{background:rgba(129,140,248,0.14);color:var(--purple);border:1px solid rgba(129,140,248,0.26)}
+.st-contactado{background:rgba(56,189,248,0.11);color:var(--cyan);border:1px solid rgba(56,189,248,0.23)}
+.st-presentado{background:rgba(245,166,35,0.10);color:#FFA500;border:1px solid rgba(245,166,35,0.22)}
+.st-reunion{background:rgba(99,102,241,0.12);color:var(--indigo);border:1px solid rgba(99,102,241,0.25)}
+.st-propuesta{background:rgba(245,166,35,0.13);color:var(--gold);border:1px solid rgba(245,166,35,0.28)}
+.st-negociando{background:rgba(56,189,248,0.13);color:#00D4FF;border:1px solid rgba(56,189,248,0.28)}
+.st-contrato{background:rgba(34,197,94,0.10);color:#4ADE80;border:1px solid rgba(34,197,94,0.22)}
+.st-firmado{background:rgba(34,197,94,0.14);color:var(--success);border:1px solid rgba(34,197,94,0.30)}
+.st-activo{background:rgba(34,197,94,0.20);color:var(--success);border:1px solid rgba(34,197,94,0.40);box-shadow:0 0 10px rgba(34,197,94,0.15)}
+.st-descartado{background:rgba(239,68,68,0.09);color:var(--danger);border:1px solid rgba(239,68,68,0.23)}
+.it{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:7px;font-size:11px;font-weight:600;background:var(--card);border:1px solid var(--border)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--tr)}
 .modal-bg.show{opacity:1;pointer-events:all}
-.modal{background:linear-gradient(160deg,#0e1a2e,#101830);border:1px solid var(--bcyan);border-radius:24px 24px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom,0) + 32px);width:100%;max-width:500px;max-height:92vh;overflow-y:auto;transform:translateY(48px);transition:transform var(--tr)}
+.modal{background:linear-gradient(160deg,#0d192c,#101830);border:1px solid var(--bcyan);border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom,0px) + 30px);width:100%;max-width:520px;max-height:93vh;overflow-y:auto;transform:translateY(50px);transition:transform var(--tr)}
 .modal-bg.show .modal{transform:translateY(0)}
-.modal-drag{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
-/* TOAST */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(15,25,45,0.97);border:1px solid var(--border);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;backdrop-filter:blur(20px);box-shadow:0 4px 24px rgba(0,0,0,0.5);opacity:0;transition:all var(--tr);z-index:999;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{border-color:rgba(34,197,94,0.4);color:var(--success)}
-.toast.err{border-color:rgba(239,68,68,0.4);color:var(--danger)}
-.toast.info{border-color:rgba(56,189,248,0.4);color:var(--cyan)}
-/* FAB */
-.fab{position:fixed;bottom:76px;right:18px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);border:none;color:#000;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(245,166,35,0.55),0 2px 8px rgba(0,0,0,0.4);transition:var(--tr)}
-.fab:hover{transform:scale(1.10);box-shadow:0 6px 32px rgba(245,166,35,0.65)}
-.fab:active{transform:scale(0.95)}
-/* STATS */
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.stat-card{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--rs);padding:14px;text-align:center;transition:var(--tr)}
-.stat-num{font-size:30px;font-weight:900;line-height:1}
-.stat-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase}
-/* PROGRESS BAR */
-.prog-wrap{margin:4px 0 12px}
-.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
-.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width 0.6s ease}
-/* COMPANY ROW */
-.co-row{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
-.co-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
-.co-row.pr-alta::before{background:var(--danger)}
-.co-row.pr-media::before{background:var(--warn)}
-.co-row.pr-baja::before{background:var(--border)}
-.co-row:hover{background:var(--card-h);border-color:rgba(56,189,248,0.28);transform:translateX(2px)}
-.co-name{font-size:16px;font-weight:800;margin-bottom:5px}
-.co-meta{font-size:12px;color:var(--muted)}
-/* INTERACTION */
-.int-row{padding:12px 0;border-bottom:1px solid var(--border)}
-.int-row:last-child{border-bottom:none}
-/* SEARCH */
-.search-wrap{position:relative;margin-bottom:14px}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;width:16px;height:16px}
-.search-wrap .finp{padding-left:38px}
-/* FILTER CHIPS */
-.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;transition:var(--tr)}
-.chip.on{background:rgba(56,189,248,0.14);border-color:rgba(56,189,248,0.35);color:var(--cyan)}
-/* PIPELINE */
-.pipe{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch}
-.pipe::-webkit-scrollbar{height:4px}
-.pipe::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.pipe-col{min-width:200px;max-width:200px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px}
-.pipe-hdr{font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.pipe-cnt{font-size:11px;background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:8px;color:var(--muted)}
-.pipe-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--rs);padding:10px;margin-bottom:8px;cursor:pointer;transition:var(--tr)}
+.modal-drag{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(12,22,40,0.97);border:1px solid var(--border);border-radius:12px;padding:9px 16px;font-size:13px;font-weight:600;backdrop-filter:blur(20px);box-shadow:0 4px 24px rgba(0,0,0,0.5);opacity:0;transition:all var(--tr);z-index:999;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.ok{border-color:rgba(34,197,94,0.4);color:var(--success)}.toast.err{border-color:rgba(239,68,68,0.4);color:var(--danger)}.toast.info{border-color:rgba(56,189,248,0.4);color:var(--cyan)}
+.fab{position:fixed;bottom:74px;right:16px;z-index:50;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#FFB627,var(--gold),#FF6B00);border:none;color:#000;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px rgba(245,166,35,0.52),0 2px 8px rgba(0,0,0,0.4);transition:var(--tr)}
+.fab:hover{transform:scale(1.1)}.fab:active{transform:scale(0.93)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--rs);padding:13px;text-align:center;transition:var(--tr);cursor:default}
+.stat-num{font-size:28px;font-weight:900;line-height:1}.stat-lbl{font-size:10px;color:var(--muted);margin-top:3px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase}
+.prog-wrap{margin-bottom:9px}.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}.prog-fill{height:100%;border-radius:3px;transition:width 0.7s ease}
+.co-row{background:var(--card);border:1px solid var(--bcyan);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
+.co-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;transition:var(--tr)}
+.co-row.pr-alta::before{background:var(--danger)}.co-row.pr-media::before{background:var(--warn)}.co-row.pr-baja::before{background:var(--border)}
+.co-row:hover{background:var(--card-h);transform:translateX(2px)}
+.co-name{font-size:15px;font-weight:800;margin-bottom:4px}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;transition:var(--tr);flex-shrink:0}
+.chip.on{background:rgba(56,189,248,0.13);border-color:rgba(56,189,248,0.32);color:var(--cyan)}
+.search-wrap{position:relative;margin-bottom:12px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;width:15px;height:15px}
+.search-wrap .finp{padding-left:36px}
+.pipe{display:flex;gap:9px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}.pipe::-webkit-scrollbar{height:4px}.pipe::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.pipe-col{min-width:185px;max-width:185px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:11px}
+.pipe-hdr{font-size:10px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+.pipe-cnt{font-size:10px;background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:7px;color:var(--muted)}
+.pipe-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--rs);padding:9px;margin-bottom:7px;cursor:pointer;transition:var(--tr)}
 .pipe-card:hover{background:rgba(255,255,255,0.09);border-color:var(--bcyan)}
-/* PENDIENTE */
-.pend-row{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.20);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:var(--tr)}
-.pend-row.today{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.28)}
-.pend-row:hover{filter:brightness(1.1)}
-/* UTILS */
-.row{display:flex;align-items:center;gap:10px}
-.wrap{flex-wrap:wrap}
-.flex1{flex:1}
+.int-row{padding:11px 0;border-bottom:1px solid var(--border)}.int-row:last-child{border-bottom:none}
+.tl{padding-left:18px;position:relative}.tl::before{content:'';position:absolute;left:6px;top:14px;bottom:0;width:1px;background:var(--border)}
+.tl-dot{position:absolute;left:0;top:3px;width:13px;height:13px;border-radius:50%;background:var(--card);border:2px solid var(--bcyan);display:flex;align-items:center;justify-content:center;font-size:7px}
+.pend-row{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.18);border-radius:var(--rs);padding:11px 13px;margin-bottom:7px;cursor:pointer;transition:var(--tr)}
+.pend-row.today{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.26)}.pend-row.ok{background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.20)}
+.pend-row:hover{filter:brightness(1.12)}
+.sec-title{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.doc-chip{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--card);cursor:pointer;transition:var(--tr);font-size:12px;font-weight:600}
+.doc-chip.done{border-color:rgba(34,197,94,0.35);background:rgba(34,197,94,0.08);color:var(--success)}
+.doc-chip input{display:none}
+.sector-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.18);color:var(--cyan)}
+.revenue-card{background:linear-gradient(135deg,rgba(245,166,35,0.12),rgba(245,166,35,0.05));border:1px solid rgba(245,166,35,0.22);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.funnel-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.funnel-bar-wrap{flex:1;height:22px;background:var(--border);border-radius:4px;overflow:hidden}
+.funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#000;transition:width 0.6s ease;min-width:24px;white-space:nowrap}
+.empty{text-align:center;padding:36px 16px;color:var(--dim)}.empty-icon{font-size:38px;margin-bottom:10px}.empty-msg{font-size:13px;line-height:1.6}
+.row{display:flex;align-items:center;gap:9px}.wrap{flex-wrap:wrap}.flex1{flex:1}.sep{height:1px;background:var(--border);margin:13px 0}.safe{height:env(safe-area-inset-bottom,8px)}
 .fw900{font-weight:900}.fw800{font-weight:800}.fw700{font-weight:700}.fw600{font-weight:600}
-.f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}.f13{font-size:13px}.f14{font-size:14px}.f15{font-size:15px}.f18{font-size:18px}.f22{font-size:22px}.f26{font-size:26px}
-.clr-gold{color:var(--gold)}.clr-cyan{color:var(--cyan)}.clr-muted{color:var(--muted)}.clr-dim{color:var(--dim)}.clr-success{color:var(--success)}.clr-danger{color:var(--danger)}
+.f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}.f13{font-size:13px}.f14{font-size:14px}.f15{font-size:15px}.f18{font-size:18px}.f22{font-size:22px}
+.clr-gold{color:var(--gold)}.clr-cyan{color:var(--cyan)}.clr-muted{color:var(--muted)}.clr-dim{color:var(--dim)}.clr-success{color:var(--success)}.clr-danger{color:var(--danger)}.clr-warn{color:var(--warn)}
 .mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
-.mt4{margin-top:4px}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
-.tc{text-align:center}
-.sep{height:1px;background:var(--border);margin:14px 0}
-.safe{height:env(safe-area-inset-bottom,8px)}
-.sec-title{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-/* TIMELINE DOT */
-.tl{position:relative;padding-left:20px}
-.tl::before{content:'';position:absolute;left:7px;top:16px;bottom:0;width:1px;background:var(--border)}
-.tl-dot{position:absolute;left:0;top:4px;width:14px;height:14px;border-radius:50%;background:var(--card);border:2px solid var(--bcyan);display:flex;align-items:center;justify-content:center;font-size:8px}
-/* EMPTY */
-.empty{text-align:center;padding:40px 20px;color:var(--dim)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-.empty-msg{font-size:14px;line-height:1.6}
-/* IMPORT */
+.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt12{margin-top:12px}.tc{text-align:center}
 #import-file{display:none}
-/* RESP */
-@media(min-width:600px){.cnt{max-width:580px;margin:0 auto}.modal{border-radius:20px;margin-bottom:40px}.modal-bg{align-items:center}.fab{right:calc(50% - 270px)}}
-</style>
-</head>
-<body>
+@media(min-width:600px){.cnt{max-width:580px;margin:0 auto}.modal{border-radius:20px;margin-bottom:40px}.modal-bg{align-items:center}.fab{right:calc(50% - 274px)}}
+</style></head><body>
 <div id="app">
-<!-- SCREEN: DASHBOARD -->
+<!-- SCREEN DASHBOARD -->
 <div class="scr act" id="s-dash">
-  <div class="hdr">
-    <div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Premios<em>Red</em> CRM</div><div class="hdr-sub" id="dash-date"></div></div></div>
-    <div class="row" style="gap:6px">
-      <button class="btn btn-ghost btn-sm" onclick="exportCSV()" title="Exportar CSV">⬇ CSV</button>
-    </div>
-  </div>
-  <div class="cnt">
-    <div class="stats" id="dash-stats"></div>
-    <div id="dash-pipeline-prog" class="mb16"></div>
-    <div class="row mb10"><div class="sec-title flex1">⚡ Próximas acciones</div><span class="f11 clr-dim" id="pend-count"></span></div>
-    <div id="dash-pendientes" class="mb16"></div>
-    <div class="row mb10"><div class="sec-title flex1">🕐 Actividad reciente</div></div>
-    <div id="dash-feed"></div>
-    <div class="safe"></div>
-  </div>
-</div>
-<!-- SCREEN: EMPRESAS -->
+<div class="hdr"><div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Premios<em>Red</em></div><div class="hdr-sub" id="dash-date-lbl"></div></div></div>
+<div class="row" style="gap:5px"><button class="btn btn-ghost btn-sm" onclick="nav('settings')" title="Ajustes">⚙️</button><button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button></div></div>
+<div class="cnt">
+<div class="stats" id="dash-stats"></div>
+<div class="revenue-card" id="dash-revenue"></div>
+<div id="dash-prog" class="mb14"></div>
+<div class="row mb8"><div class="sec-title flex1">⚡ Próximas acciones</div><span class="f11 clr-dim" id="pend-lbl"></span></div>
+<div id="dash-pend" class="mb14"></div>
+<div class="row mb8"><div class="sec-title flex1">🕐 Actividad reciente</div></div>
+<div id="dash-feed"></div><div class="safe"></div></div></div>
+<!-- SCREEN EMPRESAS -->
 <div class="scr" id="s-co">
-  <div class="hdr">
-    <div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Empresas</div><div class="hdr-sub" id="co-count">0 empresas</div></div></div>
-    <div class="row" style="gap:6px">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()" title="Importar CSV">⬆ CSV</button>
-      <input type="file" id="import-file" accept=".csv" onchange="importCSV(this)">
-    </div>
-  </div>
-  <div class="cnt">
-    <div class="search-wrap">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="finp" type="search" placeholder="Buscar por nombre, contacto, ciudad..." oninput="renderCompanies(this.value)" id="co-search">
-    </div>
-    <div class="chips" id="filter-chips">
-      <div class="chip on" onclick="setFilter('')" id="ch-all">Todos</div>
-      <div class="chip" onclick="setFilter('prospecto')" id="ch-prospecto">🔵 Prospecto</div>
-      <div class="chip" onclick="setFilter('contactado')" id="ch-contactado">📧 Contactado</div>
-      <div class="chip" onclick="setFilter('respondio')" id="ch-respondio">💬 Respondió</div>
-      <div class="chip" onclick="setFilter('negociando')" id="ch-negociando">🤝 Negociando</div>
-      <div class="chip" onclick="setFilter('firmado')" id="ch-firmado">✅ Firmado</div>
-      <div class="chip" onclick="setFilter('descartado')" id="ch-descartado">❌ Descartado</div>
-    </div>
-    <div id="co-list"></div>
-    <div class="safe"></div>
-  </div>
-  <button class="fab" onclick="openAddCompany()">+</button>
+<div class="hdr"><div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Empresas</div><div class="hdr-sub" id="co-count-lbl">0 empresas</div></div></div>
+<div class="row" style="gap:5px">
+<button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆ CSV</button>
+<input type="file" id="import-file" accept=".csv" onchange="importCSV(this)">
+<button class="btn btn-gold btn-sm" onclick="openAddCompany()">+ Añadir</button></div></div>
+<div class="cnt">
+<div class="search-wrap">
+<svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<input class="finp" type="search" id="co-search" placeholder="Buscar empresa, contacto, ciudad..." oninput="renderCompanies(this.value)">
 </div>
-<!-- SCREEN: PIPELINE -->
+<div class="chips" id="co-chips">
+<div class="chip on" onclick="setFilter('')" id="ch-all">Todos</div>
+<div class="chip" onclick="setFilter('prospecto')" id="ch-prospecto">🔵 Prospecto</div>
+<div class="chip" onclick="setFilter('contactado')" id="ch-contactado">📧 Contactado</div>
+<div class="chip" onclick="setFilter('presentado')" id="ch-presentado">📄 Presentado</div>
+<div class="chip" onclick="setFilter('reunion')" id="ch-reunion">🤝 Reunión</div>
+<div class="chip" onclick="setFilter('propuesta')" id="ch-propuesta">💼 Propuesta</div>
+<div class="chip" onclick="setFilter('negociando')" id="ch-negociando">🔄 Negociando</div>
+<div class="chip" onclick="setFilter('contrato')" id="ch-contrato">📝 Contrato</div>
+<div class="chip" onclick="setFilter('firmado')" id="ch-firmado">✅ Firmado</div>
+<div class="chip" onclick="setFilter('activo')" id="ch-activo">🟢 Activo</div>
+<div class="chip" onclick="setFilter('descartado')" id="ch-descartado">❌ Desc.</div>
+</div>
+<div id="co-list"></div><div class="safe"></div></div>
+<button class="fab" onclick="openAddCompany()">+</button></div>
+<!-- SCREEN PIPELINE -->
 <div class="scr" id="s-pipe">
-  <div class="hdr">
-    <div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Pipeline</div><div class="hdr-sub">Vista kanban</div></div></div>
-  </div>
-  <div class="cnt"><div class="pipe" id="pipe-board"></div><div class="safe"></div></div>
-</div>
-<!-- SCREEN: DETAIL -->
+<div class="hdr"><div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Pipeline</div><div class="hdr-sub">Kanban comercial</div></div></div></div>
+<div class="cnt"><div class="pipe" id="pipe-board"></div><div class="safe"></div></div></div>
+<!-- SCREEN STATS -->
+<div class="scr" id="s-stats">
+<div class="hdr"><div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Estadísticas</div><div class="hdr-sub">Análisis del pipeline</div></div></div>
+<button class="btn btn-ghost btn-sm" onclick="renderStats()">↻</button></div>
+<div class="cnt" id="stats-body"></div></div>
+<!-- SCREEN SETTINGS -->
+<div class="scr" id="s-settings">
+<div class="hdr"><div class="hdr-logo"><div class="hdr-icon">PR</div><div><div class="hdr-title">Ajustes</div></div></div>
+<button class="btn btn-ghost btn-sm" onclick="goBack()" style="width:auto">← Volver</button></div>
+<div class="cnt" id="settings-body"></div></div>
+<!-- SCREEN DETAIL -->
 <div class="scr" id="s-detail">
-  <div class="hdr">
-    <div class="row" style="gap:8px">
-      <button class="btn btn-ghost btn-sm" onclick="goBack()" style="width:auto;padding:8px 12px;flex-shrink:0">← Volver</button>
-      <div style="min-width:0"><div class="hdr-title" id="det-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">—</div></div>
-    </div>
-    <div class="row" style="gap:6px">
-      <button class="btn btn-ghost btn-sm" onclick="openEditCompany()" title="Editar" style="width:auto">✏️</button>
-      <button class="btn btn-cyan btn-sm" onclick="openAddInteraction()" style="width:auto">+ Log</button>
-    </div>
-  </div>
-  <div class="cnt" id="det-body"></div>
-</div>
-<!-- BOTTOM NAV -->
+<div class="hdr">
+<div class="row" style="gap:7px">
+<button class="btn btn-ghost btn-sm" onclick="goBack()" style="width:auto;padding:7px 11px;flex-shrink:0">← Volver</button>
+<div><div class="hdr-title" id="det-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px">—</div></div></div>
+<div class="row" style="gap:5px">
+<button class="btn btn-ghost btn-sm" onclick="openEditCompany()" style="width:auto">✏️</button>
+<button class="btn btn-cyan btn-sm" onclick="openAddInteraction()" style="width:auto">+ Log</button>
+</div></div>
+<div class="cnt" id="det-body"></div></div>
+<!-- NAV -->
 <nav class="nav" id="bot-nav">
-  <button class="nav-btn on" onclick="nav('dash')" id="nb-dash">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Inicio
-  </button>
-  <button class="nav-btn" onclick="nav('co')" id="nb-co">
-    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Empresas
-  </button>
-  <button class="nav-btn" onclick="nav('pipe')" id="nb-pipe">
-    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Pipeline
-  </button>
+<button class="nav-btn on" onclick="nav('dash')" id="nb-dash">
+<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Inicio</button>
+<button class="nav-btn" onclick="nav('co')" id="nb-co">
+<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Empresas</button>
+<button class="nav-btn" onclick="nav('pipe')" id="nb-pipe">
+<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Pipeline</button>
+<button class="nav-btn" onclick="nav('stats')" id="nb-stats">
+<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats</button>
 </nav>
-<!-- MODAL: EMPRESA -->
+<!-- MODAL EMPRESA -->
 <div class="modal-bg" id="m-co"><div class="modal">
-  <div class="modal-drag"></div>
-  <div class="f18 fw800 mb16" id="m-co-title">Nueva Empresa</div>
-  <div class="fgrp"><label class="flbl">Empresa *</label><input class="finp" id="f-name" placeholder="Iberia, ALSA, NH Hotels..."></div>
-  <div class="fgrp"><label class="flbl">Sector</label>
-    <select class="finp" id="f-sector"><option value="aerolinea">✈️ Aerolínea</option><option value="autobus">🚌 Autobús</option><option value="tren">🚂 Tren</option><option value="crucero">🚢 Crucero</option><option value="hotel">🏨 Hotel / Resort</option><option value="bar">🍺 Bar / Restaurante</option><option value="retail">🏪 Retail / Tienda</option><option value="otro">🏢 Otro</option></select>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="fgrp"><label class="flbl">País</label><input class="finp" id="f-country" value="España"></div>
-    <div class="fgrp"><label class="flbl">Ciudad</label><input class="finp" id="f-city" placeholder="Madrid"></div>
-  </div>
-  <div class="fgrp"><label class="flbl">Web</label><input class="finp" id="f-web" placeholder="www.empresa.com" type="url"></div>
-  <div class="fgrp"><label class="flbl">Nombre contacto</label><input class="finp" id="f-cname" placeholder="María García"></div>
-  <div class="fgrp"><label class="flbl">Email contacto</label><input class="finp" id="f-cemail" placeholder="maria@empresa.com" type="email"></div>
-  <div class="fgrp"><label class="flbl">Teléfono</label><input class="finp" id="f-cphone" placeholder="+34 600 000 000" type="tel"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="fgrp"><label class="flbl">Estado</label>
-      <select class="finp" id="f-status"><option value="prospecto">🔵 Prospecto</option><option value="contactado">📧 Contactado</option><option value="respondio">💬 Respondió</option><option value="negociando">🤝 Negociando</option><option value="firmado">✅ Firmado</option><option value="descartado">❌ Descartado</option></select>
-    </div>
-    <div class="fgrp"><label class="flbl">Prioridad</label>
-      <select class="finp" id="f-priority"><option value="alta">🔴 Alta</option><option value="media">🟡 Media</option><option value="baja">⚪ Baja</option></select>
-    </div>
-  </div>
-  <div class="fgrp"><label class="flbl">Notas</label><textarea class="finp" id="f-notes" placeholder="Contexto, detalles clave, observaciones..."></textarea></div>
-  <button class="btn btn-gold mb8" onclick="saveCompany()">💾 Guardar</button>
-  <button class="btn btn-ghost" onclick="closeModal('m-co')">Cancelar</button>
+<div class="modal-drag"></div>
+<div class="f18 fw800 mb14" id="m-co-title">Nueva Empresa</div>
+<div class="fgrp"><label class="flbl">Empresa *</label><input class="finp" id="f-name" placeholder="Iberia, ALSA, NH Hotels..."></div>
+<div class="fgrp"><label class="flbl">Sector</label>
+<select class="finp" id="f-sector" onchange="onSectorChange(this.value)">
+<option value="aerolinea">✈️ Aerolínea</option><option value="autobus">🚌 Empresa de Autobús</option>
+<option value="tren">🚂 Empresa de Tren</option><option value="crucero">🚢 Crucero / Ferry</option>
+<option value="hotel">🏨 Hotel / Resort</option><option value="bar">🍺 Bar / Restaurante</option>
+<option value="retail">🏪 Retail / Tienda</option><option value="otro">🏢 Otro</option></select></div>
+<div id="sector-fields"></div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">País</label><input class="finp" id="f-country" value="España"></div>
+<div class="fgrp"><label class="flbl">Ciudad</label><input class="finp" id="f-city" placeholder="Madrid"></div>
+</div>
+<div class="fgrp"><label class="flbl">Web</label><input class="finp" id="f-web" placeholder="www.empresa.com"></div>
+<div class="fgrp"><label class="flbl">Nombre contacto</label><input class="finp" id="f-cname" placeholder="María García"></div>
+<div class="fgrp"><label class="flbl">Cargo</label><input class="finp" id="f-crole" placeholder="Dir. Comercial, Marketing..."></div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">Email</label><input class="finp" id="f-cemail" type="email" placeholder="maria@empresa.com"></div>
+<div class="fgrp"><label class="flbl">Teléfono</label><input class="finp" id="f-cphone" type="tel" placeholder="+34 600 000 000"></div>
+</div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">Estado</label>
+<select class="finp" id="f-status">
+<option value="prospecto">🔵 Prospecto</option><option value="contactado">📧 Contactado</option>
+<option value="presentado">📄 Presentado</option><option value="reunion">🤝 Reunión</option>
+<option value="propuesta">💼 Propuesta env.</option><option value="negociando">🔄 Negociando</option>
+<option value="contrato">📝 Contrato env.</option><option value="firmado">✅ Firmado</option>
+<option value="activo">🟢 Activo</option><option value="descartado">❌ Descartado</option></select></div>
+<div class="fgrp"><label class="flbl">Prioridad</label>
+<select class="finp" id="f-priority"><option value="alta">🔴 Alta</option><option value="media" selected>🟡 Media</option><option value="baja">⚪ Baja</option></select></div>
+</div>
+<div id="contract-fields" style="display:none">
+<div class="sep"></div><div class="sec-title mb8">Datos del contrato</div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">Inicio contrato</label><input class="finp" id="f-cstart" type="date"></div>
+<div class="fgrp"><label class="flbl">Fin contrato</label><input class="finp" id="f-cend" type="date"></div>
+</div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">Comisión colaborador %</label><input class="finp" id="f-comm" type="number" min="0" max="100" placeholder="15"></div>
+<div class="fgrp"><label class="flbl">Mínimo packs/mes</label><input class="finp" id="f-minpacks" type="number" min="0" placeholder="50"></div>
+</div>
+<div class="fgrp"><label class="flbl">Método distribución</label>
+<select class="finp" id="f-distrib">
+<option value="ife">📺 Pantalla IFE (avión)</option><option value="pantalla_bus">🚌 Pantalla bus</option>
+<option value="qr_mesa">📱 QR mesa / asiento</option><option value="rack">🗂 Rack físico</option>
+<option value="display">🖼 Display mostrador</option><option value="digital">💻 Digital / Email</option>
+<option value="otro">🔧 Otro</option></select></div>
+</div>
+<div class="fgrp"><label class="flbl">Notas internas</label><textarea class="finp" id="f-notes" placeholder="Contexto, referencias, detalles clave..."></textarea></div>
+<button class="btn btn-gold mb8" onclick="saveCompany()">💾 Guardar empresa</button>
+<button class="btn btn-ghost" onclick="closeModal('m-co')">Cancelar</button>
 </div></div>
-<!-- MODAL: INTERACCIÓN -->
+<!-- MODAL INTERACCION -->
 <div class="modal-bg" id="m-int"><div class="modal">
-  <div class="modal-drag"></div>
-  <div class="f18 fw800 mb4">Registrar interacción</div>
-  <div class="f13 clr-muted mb16" id="int-co-name">—</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="fgrp"><label class="flbl">Tipo</label>
-      <select class="finp" id="i-type" onchange="onTypeChange(this.value)"><option value="email">📧 Email</option><option value="llamada">📞 Llamada</option><option value="whatsapp">💬 WhatsApp</option><option value="reunion">🤝 Reunión</option><option value="nota">📝 Nota</option></select>
-    </div>
-    <div class="fgrp"><label class="flbl">Fecha y hora</label><input class="finp" id="i-date" type="datetime-local"></div>
-  </div>
-  <div class="fgrp"><label class="flbl">Asunto / Resumen *</label><input class="finp" id="i-subject" placeholder="Llamada inicial de presentación..."></div>
-  <div class="fgrp"><label class="flbl">Detalle completo</label><textarea class="finp" id="i-content" placeholder="Qué se habló, quién participó, puntos clave..."></textarea></div>
-  <div class="fgrp"><label class="flbl">Resultado / Conclusión</label><input class="finp" id="i-outcome" placeholder="Interesados, piden presupuesto..."></div>
-  <div class="fgrp"><label class="flbl">Próxima acción</label><input class="finp" id="i-next" placeholder="Enviar propuesta el lunes..."></div>
-  <div class="fgrp"><label class="flbl">Fecha próxima acción</label><input class="finp" id="i-next-date" type="date"></div>
-  <div class="fgrp"><label class="flbl">Actualizar estado</label>
-    <select class="finp" id="i-status"><option value="">Sin cambio</option><option value="contactado">→ Contactado</option><option value="respondio">→ Respondió</option><option value="negociando">→ Negociando</option><option value="firmado">→ Firmado ✅</option><option value="descartado">→ Descartado ❌</option></select>
-  </div>
-  <button class="btn btn-gold mb8" onclick="saveInteraction()">💾 Guardar interacción</button>
-  <button class="btn btn-cyan mb8" id="btn-open-email" onclick="openEmailFromInt()" style="display:none">📧 Abrir plantilla email</button>
-  <button class="btn btn-ghost" onclick="closeModal('m-int')">Cancelar</button>
+<div class="modal-drag"></div>
+<div class="f18 fw800 mb4">Registrar interacción</div>
+<div class="f13 clr-muted mb14" id="int-co-name">—</div>
+<div class="grid2">
+<div class="fgrp"><label class="flbl">Tipo</label>
+<select class="finp" id="i-type" onchange="onIntTypeChange(this.value)">
+<option value="email">📧 Email</option><option value="llamada">📞 Llamada</option>
+<option value="whatsapp">💬 WhatsApp</option><option value="reunion">🤝 Reunión presencial</option>
+<option value="videollamada">📹 Videollamada</option><option value="nota">📝 Nota interna</option></select></div>
+<div class="fgrp"><label class="flbl">Fecha y hora</label><input class="finp" id="i-date" type="datetime-local"></div>
+</div>
+<div id="i-duration-wrap" class="fgrp" style="display:none"><label class="flbl">Duración (minutos)</label><input class="finp" id="i-duration" type="number" min="1" placeholder="15"></div>
+<div class="fgrp"><label class="flbl">Asunto / Resumen *</label><input class="finp" id="i-subject" placeholder="Llamada inicial, envío dossier..."></div>
+<div class="fgrp"><label class="flbl">Detalle completo</label><textarea class="finp" id="i-content" placeholder="Qué se trató, quién participó, puntos clave..."></textarea></div>
+<div class="fgrp"><label class="flbl">Resultado / Conclusión</label><input class="finp" id="i-outcome" placeholder="Interesados, piden presupuesto el lunes..."></div>
+<div class="fgrp"><label class="flbl">Próxima acción</label><input class="finp" id="i-next" placeholder="Enviar propuesta económica, llamar a..."></div>
+<div class="fgrp"><label class="flbl">Fecha límite acción</label><input class="finp" id="i-next-date" type="date"></div>
+<div class="fgrp"><label class="flbl">Actualizar estado empresa</label>
+<select class="finp" id="i-status">
+<option value="">Sin cambio</option><option value="contactado">→ Contactado</option>
+<option value="presentado">→ Presentado</option><option value="reunion">→ Reunión</option>
+<option value="propuesta">→ Propuesta enviada</option><option value="negociando">→ Negociando</option>
+<option value="contrato">→ Contrato enviado</option><option value="firmado">→ Firmado ✅</option>
+<option value="activo">→ Activo 🟢</option><option value="descartado">→ Descartado ❌</option></select></div>
+<button class="btn btn-gold mb8" onclick="saveInteraction()">💾 Guardar</button>
+<button class="btn btn-cyan mb8" id="btn-open-email" onclick="openEmailFromInt()" style="display:none">📧 Generar email</button>
+<button class="btn btn-ghost" onclick="closeModal('m-int')">Cancelar</button>
 </div></div>
-<!-- MODAL: EMAIL -->
+<!-- MODAL EMAIL -->
 <div class="modal-bg" id="m-email"><div class="modal">
-  <div class="modal-drag"></div>
-  <div class="f18 fw800 mb4">📧 Plantillas de email</div>
-  <div class="f13 clr-muted mb16">Para: <strong id="em-to"></strong></div>
-  <div id="em-tpls"></div>
-  <div class="sep"></div>
-  <button class="btn btn-ghost" onclick="closeModal('m-email')">Cerrar</button>
+<div class="modal-drag"></div>
+<div class="f18 fw800 mb4">📧 Plantillas PremiosRed</div>
+<div class="f13 clr-muted mb14">Para: <strong id="em-to"></strong></div>
+<div id="em-tpls"></div>
+<div class="sep"></div>
+<button class="btn btn-ghost" onclick="closeModal('m-email')">Cerrar</button>
 </div></div>
-<!-- MODAL: CONFIRM -->
+<!-- MODAL CONFIRM -->
 <div class="modal-bg" id="m-confirm"><div class="modal">
-  <div class="modal-drag"></div>
-  <div class="f18 fw800 mb8" id="conf-title">¿Confirmar?</div>
-  <div class="f14 clr-muted mb20" id="conf-msg"></div>
-  <button class="btn btn-danger mb8" id="conf-ok">Confirmar</button>
-  <button class="btn btn-ghost" onclick="closeModal('m-confirm')">Cancelar</button>
+<div class="modal-drag"></div>
+<div class="f18 fw800 mb8" id="conf-title">¿Confirmar?</div>
+<div class="f13 clr-muted mb18" id="conf-msg"></div>
+<button class="btn btn-danger mb8" id="conf-ok">Confirmar</button>
+<button class="btn btn-ghost" onclick="closeModal('m-confirm')">Cancelar</button>
 </div></div>
 <div class="toast" id="toast"></div>
 </div>
 <script>
-const LS_CO='pr2_co',LS_INT='pr2_int';
-let companies=[],interactions=[],editId=null,curCoId=null,filterSt='',prevNav='dash';
-function load(){try{companies=JSON.parse(localStorage.getItem(LS_CO)||'[]')}catch(e){companies=[]}try{interactions=JSON.parse(localStorage.getItem(LS_INT)||'[]')}catch(e){interactions=[]}}
-function save(){localStorage.setItem(LS_CO,JSON.stringify(companies));localStorage.setItem(LS_INT,JSON.stringify(interactions))}
+const LS_CO='pr3_co',LS_INT='pr3_int',LS_CFG='pr3_cfg';
+let companies=[],interactions=[],cfg={},editId=null,curCoId=null,filterSt='',prevNav='dash';
+function load(){
+  try{companies=JSON.parse(localStorage.getItem(LS_CO)||'[]')}catch(e){companies=[]}
+  try{interactions=JSON.parse(localStorage.getItem(LS_INT)||'[]')}catch(e){interactions=[]}
+  try{cfg=JSON.parse(localStorage.getItem(LS_CFG)||'{}')}catch(e){cfg={}}
+}
+function save(){localStorage.setItem(LS_CO,JSON.stringify(companies));localStorage.setItem(LS_INT,JSON.stringify(interactions));localStorage.setItem(LS_CFG,JSON.stringify(cfg))}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-const SL={prospecto:'Prospecto',contactado:'Contactado',respondio:'Respondió',negociando:'Negociando',firmado:'Firmado',descartado:'Descartado'};
-const SE={prospecto:'🔵',contactado:'📧',respondio:'💬',negociando:'🤝',firmado:'✅',descartado:'❌'};
+const SL={prospecto:'Prospecto',contactado:'Contactado',presentado:'Presentado',reunion:'Reunión',propuesta:'Propuesta env.',negociando:'Negociando',contrato:'Contrato env.',firmado:'Firmado',activo:'Activo',descartado:'Descartado'};
+const SE={prospecto:'🔵',contactado:'📧',presentado:'📄',reunion:'🤝',propuesta:'💼',negociando:'🔄',contrato:'📝',firmado:'✅',activo:'🟢',descartado:'❌'};
 const SEC={aerolinea:'✈️',autobus:'🚌',tren:'🚂',crucero:'🚢',hotel:'🏨',bar:'🍺',retail:'🏪',otro:'🏢'};
-const IT={email:'📧',llamada:'📞',whatsapp:'💬',reunion:'🤝',nota:'📝'};
-const PC={prospecto:'var(--purple)',contactado:'var(--cyan)',respondio:'var(--gold)',negociando:'var(--indigo)',firmado:'var(--success)',descartado:'var(--danger)'};
+const IT={email:'📧',llamada:'📞',whatsapp:'💬',reunion:'🤝',videollamada:'📹',nota:'📝'};
+const PC={prospecto:'var(--purple)',contactado:'var(--cyan)',presentado:'#FFA500',reunion:'var(--indigo)',propuesta:'var(--gold)',negociando:'#00D4FF',contrato:'#4ADE80',firmado:'var(--success)',activo:'var(--success)',descartado:'var(--danger)'};
+const STAGES=['prospecto','contactado','presentado','reunion','propuesta','negociando','contrato','firmado','activo','descartado'];
 function stBadge(s){return`<span class="st st-${s}">${SE[s]||''} ${SL[s]||s}</span>`}
-function fmtDT(ts){if(!ts)return'';const d=new Date(ts);return d.toLocaleDateString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
-function fmtD(ts){if(!ts)return'';return new Date(ts).toLocaleDateString('es-ES',{day:'2-digit',month:'short'})}
-function daysDiff(ts){return Math.round((ts-Date.now())/(1000*60*60*24))}
-
+function secBadge(s){return`<span class="sector-badge">${SEC[s]||'🏢'} ${({aerolinea:'Aerolínea',autobus:'Autobús',tren:'Tren',crucero:'Crucero',hotel:'Hotel',bar:'Bar/Rest.',retail:'Retail',otro:'Otro'})[s]||s}</span>`}
+function fmtDT(ts){if(!ts)return'';const d=new Date(ts);return d.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function fmtD(ts){if(!ts)return'';return new Date(ts).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'2-digit'})}
+function daysDiff(ts){return Math.round((ts-Date.now())/(864e5))}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 // NAV
 let curNav='dash';
-const SCRS={dash:'s-dash',co:'s-co',pipe:'s-pipe',detail:'s-detail'};
-const NBs={dash:'nb-dash',co:'nb-co',pipe:'nb-pipe'};
+const SCRMAP={dash:'s-dash',co:'s-co',pipe:'s-pipe',stats:'s-stats',settings:'s-settings',detail:'s-detail'};
+const NBM={dash:'nb-dash',co:'nb-co',pipe:'nb-pipe',stats:'nb-stats'};
 function nav(id){
-  const cur=document.getElementById(SCRS[curNav]);
-  if(cur){cur.classList.remove('act');cur.classList.add('exit');setTimeout(()=>cur.classList.remove('exit'),300)}
+  const cur=document.getElementById(SCRMAP[curNav]);
+  if(cur){cur.classList.remove('act');cur.classList.add('exit');setTimeout(()=>cur.classList.remove('exit'),280)}
   curNav=id;
-  document.getElementById(SCRS[id]).classList.add('act');
-  Object.keys(NBs).forEach(k=>document.getElementById(NBs[k])?.classList.toggle('on',k===id));
-  document.getElementById('bot-nav').style.display=['dash','co','pipe'].includes(id)?'flex':'none';
-  if(id==='dash')renderDash();else if(id==='co')renderCompanies();else if(id==='pipe')renderPipeline();
+  document.getElementById(SCRMAP[id])?.classList.add('act');
+  Object.keys(NBM).forEach(k=>document.getElementById(NBM[k])?.classList.toggle('on',k===id));
+  const showNav=['dash','co','pipe','stats'].includes(id);
+  document.getElementById('bot-nav').style.display=showNav?'flex':'none';
+  if(id==='dash')renderDash();
+  else if(id==='co')renderCompanies();
+  else if(id==='pipe')renderPipeline();
+  else if(id==='stats')renderStats();
+  else if(id==='settings')renderSettings();
 }
-function goToDetail(id){prevNav=curNav;curCoId=id;const cur=document.getElementById(SCRS[curNav]);if(cur){cur.classList.remove('act');cur.classList.add('exit');setTimeout(()=>cur.classList.remove('exit'),300)}curNav='detail';document.getElementById('s-detail').classList.add('act');document.getElementById('bot-nav').style.display='none';renderDetail(id)}
-function goBack(){document.getElementById('s-detail').classList.remove('act');nav(prevNav)}
+function goToDetail(id){prevNav=curNav;curCoId=id;const cur=document.getElementById(SCRMAP[curNav]);if(cur){cur.classList.remove('act');cur.classList.add('exit');setTimeout(()=>cur.classList.remove('exit'),280)}curNav='detail';document.getElementById('s-detail').classList.add('act');document.getElementById('bot-nav').style.display='none';renderDetail(id)}
+function goBack(){document.getElementById('s-detail').classList.remove('act');document.getElementById('s-settings').classList.remove('act');nav(prevNav||'dash')}
 function openModal(id){document.getElementById(id).classList.add('show')}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
-let toastT;
-function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3000)}
+let tT;function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3200)}
 function confirm2(title,msg,cb){document.getElementById('conf-title').textContent=title;document.getElementById('conf-msg').textContent=msg;document.getElementById('conf-ok').onclick=()=>{closeModal('m-confirm');cb()};openModal('m-confirm')}
-
 // DASHBOARD
 function renderDash(){
-  const d=new Date();document.getElementById('dash-date').textContent=d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
-  const tot=companies.length,firm=companies.filter(c=>c.status==='firmado').length,neg=companies.filter(c=>c.status==='negociando').length;
+  const d=new Date();
+  document.getElementById('dash-date-lbl').textContent=d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  const tot=companies.length,firm=companies.filter(c=>['firmado','activo'].includes(c.status)).length;
+  const neg=companies.filter(c=>c.status==='negociando').length;
   const hoy=new Date();hoy.setHours(0,0,0,0);const intH=interactions.filter(i=>new Date(i.ts)>=hoy).length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-num clr-cyan">${tot}</div><div class="stat-lbl">Empresas</div></div>
     <div class="stat-card"><div class="stat-num clr-gold">${neg}</div><div class="stat-lbl">Negociando</div></div>
-    <div class="stat-card"><div class="stat-num clr-success">${firm}</div><div class="stat-lbl">Firmados</div></div>
+    <div class="stat-card"><div class="stat-num clr-success">${firm}</div><div class="stat-lbl">Firmados/Activos</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${intH}</div><div class="stat-lbl">Logs hoy</div></div>`;
-  const STAGES=['prospecto','contactado','respondio','negociando','firmado'];
-  document.getElementById('dash-pipeline-prog').innerHTML=tot?STAGES.map(s=>{const n=companies.filter(c=>c.status===s).length;const pct=tot?Math.round(n/tot*100):0;return`<div class="prog-wrap"><div class="prog-lbl"><span>${SE[s]} ${SL[s]}</span><span>${n}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${PC[s]}"></div></div></div>`}).join(''):'';
-  const pends=interactions.filter(i=>i.nextDate).map(i=>{const co=companies.find(c=>c.id===i.coId)||{name:'?'};const d=daysDiff(i.nextDate);return{...i,co,d}}).filter(i=>i.d<=7).sort((a,b)=>a.d-b.d);
-  document.getElementById('pend-count').textContent=pends.length?`${pends.length} pendiente${pends.length>1?'s':''}`:''
-  document.getElementById('dash-pendientes').innerHTML=pends.length?pends.map(p=>`<div class="pend-row ${p.d<=0?'today':''}" onclick="goToDetail('${p.co.id}')"><div class="row mb4"><span class="fw700 f13 flex1">${SEC[p.co.sector]||'🏢'} ${p.co.name}</span><span class="f11 ${p.d<=0?'clr-danger':'clr-gold'}">${p.d<=0?'HOY / VENCIDO':`en ${p.d}d`}</span></div><div class="f12 clr-muted">→ ${p.next}</div></div>`).join(''):`<div class="f12 clr-dim" style="padding:8px 0">Sin acciones pendientes esta semana 🎉</div>`;
-  const recent=[...interactions].sort((a,b)=>b.ts-a.ts).slice(0,8);
-  document.getElementById('dash-feed').innerHTML=recent.length?recent.map(i=>{const co=companies.find(c=>c.id===i.coId)||{name:'?'};return`<div class="int-row"><div class="row mb4"><span>${IT[i.type]||'📝'}</span><span class="fw700 f14 flex1">${co.name}</span><span class="clr-dim f11">${fmtDT(i.ts)}</span></div><div class="f13 clr-muted">${i.subject||''}</div>${i.next?`<div class="f11 clr-dim mt4">→ ${i.next}</div>`:''}</div>`}).join(''):`<div class="empty"><div class="empty-icon">📋</div><div class="empty-msg">Sin actividad aún.<br>Añade empresas y empieza a registrar.</div></div>`;
-  updatePendBadge(pends.filter(p=>p.d<=0).length);
+  // Revenue projection
+  const activos=companies.filter(c=>c.status==='activo');
+  const projMensual=activos.reduce((s,c)=>{const min=parseInt(c.minpacks)||0;const comm=parseFloat(c.commission)||15;return s+(min*7*(comm/100))},0);
+  document.getElementById('dash-revenue').innerHTML=`
+    <div class="row mb8"><div class="f11 fw800 clr-gold" style="letter-spacing:1px;text-transform:uppercase">💰 Proyección ingresos</div></div>
+    <div class="row wrap" style="gap:12px">
+      <div><div class="f22 fw900 clr-gold">€${Math.round(projMensual).toLocaleString('es-ES')}</div><div class="f11 clr-muted">estimado/mes (colaboradores activos)</div></div>
+      <div><div class="f18 fw800 clr-success">${activos.length}</div><div class="f11 clr-muted">activos</div></div>
+      <div><div class="f18 fw800" style="color:var(--indigo)">${companies.filter(c=>c.status==='firmado').length}</div><div class="f11 clr-muted">firmados</div></div>
+    </div>`;
+  // Pipeline progress
+  const activeStages=['prospecto','contactado','presentado','reunion','propuesta','negociando','contrato','firmado','activo'];
+  document.getElementById('dash-prog').innerHTML=tot?activeStages.slice(0,6).map(s=>{const n=companies.filter(c=>c.status===s).length;const pct=tot?Math.round(n/tot*100):0;return`<div class="prog-wrap"><div class="prog-lbl"><span>${SE[s]} ${SL[s]}</span><span>${n}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${PC[s]}"></div></div></div>`}).join(''):'';
+  // Pendientes
+  const pends=interactions.filter(i=>i.nextDate&&i.next).map(i=>{const co=companies.find(c=>c.id===i.coId)||{name:'?',sector:'otro'};return{...i,co,d:daysDiff(i.nextDate)}}).filter(x=>x.d<=7).sort((a,b)=>a.d-b.d);
+  document.getElementById('pend-lbl').textContent=pends.length?`${pends.length} pendiente${pends.length>1?'s':''}`:''
+  document.getElementById('dash-pend').innerHTML=pends.length?pends.map(p=>`<div class="pend-row ${p.d<0?'':'p.d===0?today:ok'}" onclick="goToDetail('${p.co.id}')">
+    <div class="row mb4"><span class="fw700 f13 flex1">${SEC[p.co.sector]||'🏢'} ${esc(p.co.name)}</span>
+    <span class="f11 fw700 ${p.d<=0?'clr-danger':'clr-gold'}">${p.d<=0?'⚠️ VENCIDA':`en ${p.d}d`}</span></div>
+    <div class="f12 clr-muted">→ ${esc(p.next)}</div></div>`).join(''):`<div class="f12 clr-dim" style="padding:6px 0">🎉 Sin acciones pendientes esta semana</div>`;
+  updateBadge('nb-dash',pends.filter(x=>x.d<=0).length);
+  // Feed
+  const recent=[...interactions].sort((a,b)=>b.ts-a.ts).slice(0,7);
+  document.getElementById('dash-feed').innerHTML=recent.length?recent.map(i=>{const co=companies.find(c=>c.id===i.coId)||{name:'?'};return`<div class="int-row"><div class="row mb4"><span>${IT[i.type]||'📝'}</span><span class="fw700 f14 flex1">${esc(co.name)}</span><span class="clr-dim f11">${fmtDT(i.ts)}</span></div><div class="f13 clr-muted">${esc(i.subject||'')}</div>${i.next?`<div class="f11 clr-dim mt4">→ ${esc(i.next)}</div>`:''}</div>`}).join(''):`<div class="empty"><div class="empty-icon">📋</div><div class="empty-msg">Sin actividad aún.<br>Empieza añadiendo tu primera empresa.</div></div>`;
 }
-function updatePendBadge(n){const b=document.querySelector('#nb-dash .badge');if(n>0){if(!b){const bd=document.createElement('span');bd.className='badge';document.getElementById('nb-dash').appendChild(bd)}document.querySelector('#nb-dash .badge').textContent=n}else if(b)b.remove()}
-
+function updateBadge(btnId,n){const btn=document.getElementById(btnId);if(!btn)return;let b=btn.querySelector('.badge');if(n>0){if(!b){b=document.createElement('span');b.className='badge';btn.appendChild(b)}b.textContent=n}else if(b)b.remove()}
 // COMPANIES
 function setFilter(v){filterSt=v;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));document.getElementById('ch-'+(v||'all'))?.classList.add('on');renderCompanies()}
 function renderCompanies(q){
   q=(q!==undefined?q:document.getElementById('co-search')?.value||'').toLowerCase();
   let list=companies.filter(c=>(!q||c.name.toLowerCase().includes(q)||c.contactName?.toLowerCase().includes(q)||c.city?.toLowerCase().includes(q))&&(!filterSt||c.status===filterSt));
-  list.sort((a,b)=>({alta:0,media:1,baja:2}[a.priority]||1)-({alta:0,media:1,baja:2}[b.priority]||1)||a.name.localeCompare(b.name));
-  document.getElementById('co-count').textContent=`${list.length} empresa${list.length!==1?'s':''}`;
+  const prW={alta:0,media:1,baja:2};
+  list.sort((a,b)=>(prW[a.priority]||1)-(prW[b.priority]||1)||a.name.localeCompare(b.name));
+  document.getElementById('co-count-lbl').textContent=`${list.length} empresa${list.length!==1?'s':''}`;
   const el=document.getElementById('co-list');
-  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🏢</div><div class="empty-msg">No hay empresas.<br>Pulsa <strong style="color:var(--gold)">+</strong> para añadir.</div></div>`;return}
-  el.innerHTML=list.map(co=>{const n=interactions.filter(i=>i.coId===co.id).length;const last=interactions.filter(i=>i.coId===co.id).sort((a,b)=>b.ts-a.ts)[0];return`<div class="co-row pr-${co.priority}" onclick="goToDetail('${co.id}')"><div class="row mb6"><span class="co-name flex1">${SEC[co.sector]||'🏢'} ${co.name}</span>${stBadge(co.status)}</div><div class="row wrap" style="gap:6px"><span class="co-meta flex1">${co.contactName||'Sin contacto'} · ${co.city||co.country||''}</span><span class="co-meta">${n} log${n!==1?'s':''} ${last?'· '+fmtD(last.ts):''}</span></div></div>`}).join('');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🏢</div><div class="empty-msg">No hay empresas.<br>Pulsa <strong style="color:var(--gold)">+ Añadir</strong> para empezar.</div></div>`;return}
+  el.innerHTML=list.map(co=>{
+    const n=interactions.filter(i=>i.coId===co.id).length;
+    const last=interactions.filter(i=>i.coId===co.id).sort((a,b)=>b.ts-a.ts)[0];
+    const pend=interactions.filter(i=>i.coId===co.id&&i.nextDate&&daysDiff(i.nextDate)<=0).length;
+    return`<div class="co-row pr-${co.priority}" onclick="goToDetail('${co.id}')">
+      <div class="row mb6">${secBadge(co.sector)}<span class="co-name flex1">${esc(co.name)}</span>${stBadge(co.status)}</div>
+      <div class="row wrap" style="gap:6px">
+        <span class="f12 clr-muted flex1">${esc(co.contactName||'Sin contacto')} · ${esc(co.city||co.country||'')}</span>
+        ${pend?`<span class="f11 fw700 clr-danger">⚠️ ${pend} venc.</span>`:''}
+        <span class="f11 clr-dim">${n} log${n!==1?'s':''} ${last?'· '+fmtD(last.ts):''}</span>
+      </div></div>`;
+  }).join('');
 }
-
 // PIPELINE
 function renderPipeline(){
-  const cols=['prospecto','contactado','respondio','negociando','firmado','descartado'];
-  document.getElementById('pipe-board').innerHTML=cols.map(s=>{const cos=companies.filter(c=>c.status===s);return`<div class="pipe-col"><div class="pipe-hdr" style="color:${PC[s]}">${SE[s]} ${SL[s]}<span class="pipe-cnt">${cos.length}</span></div>${cos.map(c=>`<div class="pipe-card" onclick="goToDetail('${c.id}')"><div class="fw700 f13 mb4">${SEC[c.sector]||'🏢'} ${c.name}</div><div class="f11 clr-muted">${c.contactName||''}</div></div>`).join('')||`<div class="f11 clr-dim tc" style="padding:12px">Vacío</div>`}</div>`}).join('');
+  const cols=STAGES.filter(s=>s!=='descartado').concat(['descartado']);
+  document.getElementById('pipe-board').innerHTML=cols.map(s=>{
+    const cos=companies.filter(c=>c.status===s);
+    return`<div class="pipe-col"><div class="pipe-hdr" style="color:${PC[s]}">${SE[s]} ${SL[s]}<span class="pipe-cnt">${cos.length}</span></div>
+      ${cos.map(c=>`<div class="pipe-card" onclick="goToDetail('${c.id}')"><div class="fw700 f13 mb4">${SEC[c.sector]||'🏢'} ${esc(c.name)}</div><div class="f11 clr-muted">${esc(c.contactName||'')}</div></div>`).join('')||`<div class="f11 clr-dim tc" style="padding:10px">Vacío</div>`}
+    </div>`;
+  }).join('');
 }
-
+// STATS
+function renderStats(){
+  const el=document.getElementById('stats-body');
+  const tot=companies.length;
+  if(!tot){el.innerHTML=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-msg">Añade empresas para ver estadísticas.</div></div>`;return}
+  // Funnel
+  const funnelStages=['prospecto','contactado','presentado','reunion','propuesta','negociando','contrato','firmado','activo'];
+  const funnelHtml=funnelStages.map(s=>{const n=companies.filter(c=>c.status===s).length;const pct=tot?Math.round(n/tot*100):0;return`<div class="funnel-row"><span style="font-size:11px;color:${PC[s]};width:90px;flex-shrink:0">${SE[s]} ${SL[s]}</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.max(pct,3)}%;background:${PC[s]}">${n}</div></div></div>`}).join('');
+  // By sector
+  const sectors=['aerolinea','autobus','tren','crucero','hotel','bar','retail','otro'];
+  const sectHtml=sectors.map(s=>{const n=companies.filter(c=>c.sector===s).length;if(!n)return'';const pct=Math.round(n/tot*100);return`<div class="prog-wrap"><div class="prog-lbl"><span>${SEC[s]} ${({aerolinea:'Aerolínea',autobus:'Autobús',tren:'Tren',crucero:'Crucero',hotel:'Hotel',bar:'Bar/Rest.',retail:'Retail',otro:'Otro'})[s]}</span><span>${n} (${pct}%)</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:var(--cyan)"></div></div></div>`}).join('');
+  // Activity last 7 days
+  const days7=new Date(Date.now()-7*864e5);const intW=interactions.filter(i=>new Date(i.ts)>=days7).length;
+  const firmados=companies.filter(c=>['firmado','activo'].includes(c.status));
+  const totalCoverage=firmados.reduce((s,c)=>s+(parseInt(c.coverage)||0),0);
+  el.innerHTML=`
+    <div class="card mb12"><div class="sec-title mb10">🎯 Embudo comercial</div>${funnelHtml}</div>
+    <div class="card mb12"><div class="sec-title mb10">🏭 Por sector</div>${sectHtml||'<div class="clr-dim f12">Sin datos</div>'}</div>
+    <div class="stats mb12">
+      <div class="stat-card"><div class="stat-num clr-cyan">${intW}</div><div class="stat-lbl">Logs 7 días</div></div>
+      <div class="stat-card"><div class="stat-num clr-gold">${companies.filter(c=>c.status==='descartado').length}</div><div class="stat-lbl">Descartados</div></div>
+      <div class="stat-card"><div class="stat-num clr-success">${totalCoverage.toLocaleString('es-ES')}</div><div class="stat-lbl">Alcance total</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${interactions.length}</div><div class="stat-lbl">Total logs</div></div>
+    </div>
+    <div class="safe"></div>`;
+}
 // DETAIL
 function renderDetail(id){
   const co=companies.find(c=>c.id===id);if(!co)return;
   document.getElementById('det-name').textContent=`${SEC[co.sector]||'🏢'} ${co.name}`;
   const ints=interactions.filter(i=>i.coId===id).sort((a,b)=>b.ts-a.ts);
-  const prLbl={alta:'🔴 Alta',media:'🟡 Media',baja:'⚪ Baja'};
+  const docs=co.docs||{};
+  const docItems=[{k:'nda',l:'NDA firmado'},{k:'dossier',l:'Dossier enviado'},{k:'propuesta',l:'Propuesta económica'},{k:'contrato',l:'Contrato enviado'},{k:'firmadoDoc',l:'Contrato firmado'}];
+  const docsHtml=`<div class="docs-grid">${docItems.map(d=>`<label class="doc-chip ${docs[d.k]?'done':''}" onclick="toggleDoc('${id}','${d.k}')"><span>${docs[d.k]?'✅':'⬜'}</span><span>${d.l}</span></label>`).join('')}</div>`;
+  const contractHtml=['firmado','activo','contrato'].includes(co.status)&&(co.contractStart||co.commission||co.minpacks)?`
+    <div class="card card-sm mb10">
+      <div class="sec-title mb6">📝 Datos del contrato</div>
+      <div class="row wrap" style="gap:10px">
+        ${co.contractStart?`<div><div class="f11 clr-dim">Inicio</div><div class="f13 fw700">${fmtD(co.contractStart)}</div></div>`:''}
+        ${co.contractEnd?`<div><div class="f11 clr-dim">Fin</div><div class="f13 fw700">${fmtD(co.contractEnd)}</div></div>`:''}
+        ${co.commission?`<div><div class="f11 clr-dim">Comisión</div><div class="f13 fw700 clr-gold">${co.commission}%</div></div>`:''}
+        ${co.minpacks?`<div><div class="f11 clr-dim">Mín/mes</div><div class="f13 fw700">${co.minpacks} packs</div></div>`:''}
+        ${co.distrib?`<div><div class="f11 clr-dim">Distribución</div><div class="f13 fw700">${co.distrib}</div></div>`:''}
+      </div>
+    </div>`:'';
   document.getElementById('det-body').innerHTML=`
-    <div class="card mb12">
-      <div class="row wrap mb10" style="gap:8px">${stBadge(co.status)}<span class="f12 clr-muted">${prLbl[co.priority]||''} prioridad</span><span class="f11 clr-dim" style="margin-left:auto">Desde ${co.createdAt?fmtD(co.createdAt):'—'}</span></div>
-      ${co.contactName?`<div class="fw700 f15 mb6">${co.contactName}</div>`:''}
-      ${co.contactEmail?`<div class="mb6"><a href="mailto:${co.contactEmail}" style="color:var(--cyan);text-decoration:none;font-size:14px">📧 ${co.contactEmail}</a></div>`:''}
-      ${co.contactPhone?`<div class="mb6"><a href="tel:${co.contactPhone}" style="color:var(--cyan);text-decoration:none;font-size:14px">📞 ${co.contactPhone}</a></div>`:''}
-      ${co.website?`<div class="mb6"><a href="${co.website.startsWith('http')?co.website:'https://'+co.website}" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-size:14px">🌐 ${co.website}</a></div>`:''}
-      ${co.city||co.country?`<div class="f12 clr-muted">📍 ${[co.city,co.country].filter(Boolean).join(', ')}</div>`:''}
+    <div class="card mb10">
+      <div class="row wrap mb10" style="gap:7px">${stBadge(co.status)}${secBadge(co.sector)}<span class="f11 clr-dim" style="margin-left:auto">${{'alta':'🔴 Alta','media':'🟡 Media','baja':'⚪ Baja'}[co.priority]||''}</span></div>
+      ${co.contactName?`<div class="fw700 f15 mb5">${esc(co.contactName)}${co.crole?` <span class="f12 clr-muted fw600">· ${esc(co.crole)}</span>`:''}</div>`:''}
+      ${co.contactEmail?`<div class="mb5"><a href="mailto:${co.contactEmail}" style="color:var(--cyan);text-decoration:none;font-size:14px">📧 ${co.contactEmail}</a></div>`:''}
+      ${co.contactPhone?`<div class="mb5"><a href="tel:${co.contactPhone}" style="color:var(--cyan);text-decoration:none;font-size:14px">📞 ${co.contactPhone}</a></div>`:''}
+      ${co.contactPhone?`<div class="mb5"><a href="https://wa.me/${co.contactPhone.replace(/[^0-9]/g,'')}" target="_blank" style="color:#25D366;text-decoration:none;font-size:14px">💬 WhatsApp</a></div>`:''}
+      ${co.website?`<div class="mb5"><a href="${co.website.startsWith('http')?co.website:'https://'+co.website}" target="_blank" style="color:var(--cyan);text-decoration:none;font-size:14px">🌐 ${co.website}</a></div>`:''}
+      ${co.city||co.country?`<div class="f12 clr-muted mt4">📍 ${[co.city,co.country].filter(Boolean).join(', ')}</div>`:''}
+      ${co.coverage?`<div class="f12 clr-muted mt4">👥 ${parseInt(co.coverage).toLocaleString('es-ES')} ${co.coverageUnit||'personas/mes'}</div>`:''}
     </div>
-    ${co.notes?`<div class="card card-sm mb12"><div class="sec-title mb6">Notas</div><div class="f13" style="line-height:1.6">${co.notes.replace(/\n/g,'<br>')}</div></div>`:''}
-    <div class="row mb12" style="gap:8px">
+    ${contractHtml}
+    <div class="card card-sm mb10"><div class="sec-title mb6">📋 Checklist documentación</div>${docsHtml}</div>
+    ${co.notes?`<div class="card card-sm mb10"><div class="sec-title mb6">Notas</div><div class="f13" style="line-height:1.6">${esc(co.notes).replace(/\n/g,'<br>')}</div></div>`:''}
+    <div class="row mb10" style="gap:8px">
       <button class="btn btn-gold flex1" onclick="openEmailModal('${id}')">📧 Email</button>
-      <button class="btn btn-danger flex1" onclick="confirm2('Eliminar empresa','Esta acción eliminará la empresa y todo su historial. No se puede deshacer.',()=>deleteCompany('${id}'))">🗑 Eliminar</button>
+      <button class="btn btn-danger flex1" onclick="confirm2('Eliminar empresa','Se elimina la empresa y todo su historial. Acción irreversible.',()=>deleteCompany('${id}'))">🗑</button>
     </div>
-    <div class="row mb10"><div class="sec-title flex1">Log de actividad</div><span class="f11 clr-dim">${ints.length} registro${ints.length!==1?'s':''}</span></div>
-    ${ints.length?`<div class="tl">${ints.map((i,idx)=>`<div class="int-row" style="position:relative"><div class="tl-dot">${IT[i.type]||'📝'}</div><div class="row mb4" style="padding-left:4px"><span class="it">${IT[i.type]} ${i.type}</span><span class="f11 clr-dim" style="margin-left:auto">${fmtDT(i.ts)}</span></div>${i.subject?`<div class="fw700 f14 mb4" style="padding-left:4px">${i.subject}</div>`:''}${i.content?`<div class="f13 clr-muted mb4" style="padding-left:4px;line-height:1.5">${i.content.replace(/\n/g,'<br>')}</div>`:''}${i.outcome?`<div class="f12 mb4" style="padding-left:4px"><span class="clr-dim">Resultado: </span>${i.outcome}</div>`:''}${i.next?`<div class="f12 mb4" style="padding-left:4px"><span class="clr-gold">→ </span><strong>${i.next}</strong>${i.nextDate?` <span class="clr-dim">(${fmtD(i.nextDate)})</span>`:''}</div>`:''}${idx<ints.length-1?'<div style="height:12px"></div>':''}</div>`).join('')}</div>`:`<div class="empty"><div class="empty-icon">📝</div><div class="empty-msg">Sin interacciones.<br>Toca <strong style="color:var(--cyan)">+ Log</strong> para registrar.</div></div>`}
+    <div class="row mb8"><div class="sec-title flex1">🕐 Historial</div><span class="f11 clr-dim">${ints.length} registro${ints.length!==1?'s':''}</span></div>
+    ${ints.length?`<div class="tl">${ints.map((i,idx)=>`<div class="int-row" style="position:relative"><div class="tl-dot">${IT[i.type]||'📝'}</div><div style="padding-left:4px"><div class="row mb4"><span class="it">${IT[i.type]} ${i.type}${i.duration?` (${i.duration}min)`:''}</span><span class="f11 clr-dim" style="margin-left:auto">${fmtDT(i.ts)}</span></div>${i.subject?`<div class="fw700 f14 mb4">${esc(i.subject)}</div>`:''}${i.content?`<div class="f13 clr-muted mb4" style="line-height:1.5">${esc(i.content).replace(/\n/g,'<br>')}</div>`:''}${i.outcome?`<div class="f12 mb4"><span class="clr-dim">Resultado: </span>${esc(i.outcome)}</div>`:''}${i.next?`<div class="f12 mb4"><span class="clr-gold">→ </span><strong>${esc(i.next)}</strong>${i.nextDate?` <span class="clr-dim">(${fmtD(i.nextDate)})</span>`:''}</div>`:''}${idx<ints.length-1?'<div style="height:10px"></div>':''}</div></div>`).join('')}</div>`:`<div class="empty"><div class="empty-icon">📝</div><div class="empty-msg">Sin interacciones.<br>Toca <strong style="color:var(--cyan)">+ Log</strong>.</div></div>`}
     <div class="safe"></div>`;
 }
-
+function toggleDoc(coId,key){const i=companies.findIndex(c=>c.id===coId);if(i<0)return;if(!companies[i].docs)companies[i].docs={};companies[i].docs[key]=!companies[i].docs[key];companies[i].updatedAt=Date.now();save();renderDetail(coId);toast(companies[i].docs[key]?'Documento marcado ✓':'Desmarcado','ok')}
+// SECTOR FIELDS
+const SECTOR_FIELDS={
+  aerolinea:`<div class="grid2"><div class="fgrp"><label class="flbl">Pasajeros/año (millones)</label><input class="finp" id="f-coverage" type="number" placeholder="5"></div><div class="fgrp"><label class="flbl">Sistema IFE</label><input class="finp" id="f-ife" placeholder="Panasonic, Thales..."></div></div>`,
+  autobus:`<div class="grid2"><div class="fgrp"><label class="flbl">Pasajeros/mes (miles)</label><input class="finp" id="f-coverage" type="number" placeholder="200"></div><div class="fgrp"><label class="flbl">Nº de autobuses</label><input class="finp" id="f-buses" type="number" placeholder="50"></div></div>`,
+  hotel:`<div class="grid2"><div class="fgrp"><label class="flbl">Habitaciones</label><input class="finp" id="f-coverage" type="number" placeholder="150"></div><div class="fgrp"><label class="flbl">Estrellas</label><select class="finp" id="f-stars"><option>3★</option><option>4★</option><option>5★</option></select></div></div>`,
+  bar:`<div class="fgrp"><label class="flbl">Clientes/día (aprox.)</label><input class="finp" id="f-coverage" type="number" placeholder="100"></div>`,
+};
+function onSectorChange(v){
+  const sf=document.getElementById('sector-fields');
+  sf.innerHTML=SECTOR_FIELDS[v]||`<div class="fgrp"><label class="flbl">Alcance estimado (personas/mes)</label><input class="finp" id="f-coverage" type="number" placeholder="0"></div>`;
+  const ct=document.getElementById('contract-fields');
+  if(ct)ct.style.display=['firmado','activo','contrato'].includes(document.getElementById('f-status').value)?'block':'none';
+}
+// show/hide contract fields on status change
+document.addEventListener('change',e=>{if(e.target.id==='f-status'){const ct=document.getElementById('contract-fields');if(ct)ct.style.display=['firmado','activo','contrato'].includes(e.target.value)?'block':'none'}});
 // CRUD COMPANY
-function openAddCompany(){editId=null;document.getElementById('m-co-title').textContent='Nueva Empresa';['f-name','f-city','f-web','f-cname','f-cemail','f-cphone','f-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-sector').value='otro';document.getElementById('f-country').value='España';document.getElementById('f-status').value='prospecto';document.getElementById('f-priority').value='media';openModal('m-co')}
-function openEditCompany(){const co=companies.find(c=>c.id===curCoId);if(!co)return;editId=co.id;document.getElementById('m-co-title').textContent='Editar empresa';document.getElementById('f-name').value=co.name||'';document.getElementById('f-sector').value=co.sector||'otro';document.getElementById('f-country').value=co.country||'España';document.getElementById('f-city').value=co.city||'';document.getElementById('f-web').value=co.website||'';document.getElementById('f-cname').value=co.contactName||'';document.getElementById('f-cemail').value=co.contactEmail||'';document.getElementById('f-cphone').value=co.contactPhone||'';document.getElementById('f-status').value=co.status||'prospecto';document.getElementById('f-priority').value=co.priority||'media';document.getElementById('f-notes').value=co.notes||'';openModal('m-co')}
-function saveCompany(){const name=document.getElementById('f-name').value.trim();if(!name){toast('El nombre es obligatorio','err');return}const co={id:editId||uid(),name,sector:document.getElementById('f-sector').value,country:document.getElementById('f-country').value.trim(),city:document.getElementById('f-city').value.trim(),website:document.getElementById('f-web').value.trim(),contactName:document.getElementById('f-cname').value.trim(),contactEmail:document.getElementById('f-cemail').value.trim(),contactPhone:document.getElementById('f-cphone').value.trim(),status:document.getElementById('f-status').value,priority:document.getElementById('f-priority').value,notes:document.getElementById('f-notes').value.trim(),updatedAt:Date.now()};if(editId){const i=companies.findIndex(c=>c.id===editId);companies[i]={...companies[i],...co}}else{co.createdAt=Date.now();companies.push(co)}save();closeModal('m-co');if(editId&&curCoId===editId)renderDetail(editId);else renderCompanies();toast(editId?'Empresa actualizada ✓':'Empresa añadida ✓')}
+function openAddCompany(){editId=null;document.getElementById('m-co-title').textContent='Nueva Empresa';['f-name','f-city','f-web','f-cname','f-crole','f-cemail','f-cphone','f-notes','f-coverage','f-comm','f-minpacks'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});document.getElementById('f-sector').value='aerolinea';onSectorChange('aerolinea');document.getElementById('f-country').value='España';document.getElementById('f-status').value='prospecto';document.getElementById('f-priority').value='media';if(document.getElementById('contract-fields'))document.getElementById('contract-fields').style.display='none';openModal('m-co')}
+function openEditCompany(){
+  const co=companies.find(c=>c.id===curCoId);if(!co)return;editId=co.id;document.getElementById('m-co-title').textContent='Editar empresa';
+  document.getElementById('f-name').value=co.name||'';document.getElementById('f-sector').value=co.sector||'otro';onSectorChange(co.sector||'otro');
+  document.getElementById('f-country').value=co.country||'España';document.getElementById('f-city').value=co.city||'';document.getElementById('f-web').value=co.website||'';
+  document.getElementById('f-cname').value=co.contactName||'';document.getElementById('f-crole').value=co.crole||'';document.getElementById('f-cemail').value=co.contactEmail||'';document.getElementById('f-cphone').value=co.contactPhone||'';
+  document.getElementById('f-status').value=co.status||'prospecto';document.getElementById('f-priority').value=co.priority||'media';document.getElementById('f-notes').value=co.notes||'';
+  const cov=document.getElementById('f-coverage');if(cov)cov.value=co.coverage||'';
+  ['f-comm','f-minpacks','f-cstart','f-cend'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=co[id.replace('f-','')]||''});
+  if(document.getElementById('f-distrib')&&co.distrib)document.getElementById('f-distrib').value=co.distrib;
+  const ct=document.getElementById('contract-fields');if(ct)ct.style.display=['firmado','activo','contrato'].includes(co.status)?'block':'none';
+  openModal('m-co');
+}
+function saveCompany(){
+  const name=document.getElementById('f-name').value.trim();if(!name){toast('El nombre es obligatorio','err');return}
+  const sector=document.getElementById('f-sector').value;
+  const co={id:editId||uid(),name,sector,country:document.getElementById('f-country').value.trim(),city:document.getElementById('f-city').value.trim(),website:document.getElementById('f-web').value.trim(),contactName:document.getElementById('f-cname').value.trim(),crole:document.getElementById('f-crole').value.trim(),contactEmail:document.getElementById('f-cemail').value.trim(),contactPhone:document.getElementById('f-cphone').value.trim(),status:document.getElementById('f-status').value,priority:document.getElementById('f-priority').value,notes:document.getElementById('f-notes').value.trim(),updatedAt:Date.now(),coverage:document.getElementById('f-coverage')?.value||'',commission:document.getElementById('f-comm')?.value||'',minpacks:document.getElementById('f-minpacks')?.value||'',contractStart:document.getElementById('f-cstart')?.value?new Date(document.getElementById('f-cstart').value).getTime():null,contractEnd:document.getElementById('f-cend')?.value?new Date(document.getElementById('f-cend').value).getTime():null,distrib:document.getElementById('f-distrib')?.value||''};
+  if(sector==='aerolinea'){co.coverageUnit='millones pasajeros/año';co.ifePlatform=document.getElementById('f-ife')?.value||''}
+  else if(sector==='autobus'){co.coverageUnit='miles pasajeros/mes';co.buses=document.getElementById('f-buses')?.value||''}
+  else if(sector==='hotel'){co.coverageUnit='habitaciones';co.stars=document.getElementById('f-stars')?.value||''}
+  else{co.coverageUnit='personas/mes'}
+  if(editId){const i=companies.findIndex(c=>c.id===editId);companies[i]={...companies[i],...co}}
+  else{co.createdAt=Date.now();co.docs={};companies.push(co)}
+  save();closeModal('m-co');if(editId&&curCoId===editId)renderDetail(editId);else renderCompanies();toast(editId?'Empresa actualizada ✓':'Empresa añadida ✓')
+}
 function deleteCompany(id){companies=companies.filter(c=>c.id!==id);interactions=interactions.filter(i=>i.coId!==id);save();goBack();toast('Empresa eliminada')}
-
-// CRUD INTERACTION
-function openAddInteraction(){const co=companies.find(c=>c.id===curCoId);document.getElementById('int-co-name').textContent=co?`${SEC[co.sector]||'🏢'} ${co.name}`:'';const now=new Date(),loc=new Date(now-now.getTimezoneOffset()*60000).toISOString().slice(0,16);document.getElementById('i-date').value=loc;['i-subject','i-content','i-outcome','i-next'].forEach(id=>document.getElementById(id).value='');document.getElementById('i-next-date').value='';document.getElementById('i-type').value='email';document.getElementById('i-status').value='';document.getElementById('btn-open-email').style.display='block';openModal('m-int')}
-function onTypeChange(v){document.getElementById('btn-open-email').style.display=v==='email'?'block':'none'}
-function saveInteraction(){const subject=document.getElementById('i-subject').value.trim();if(!subject){toast('El asunto es obligatorio','err');return}const dv=document.getElementById('i-date').value,ndv=document.getElementById('i-next-date').value;const int={id:uid(),coId:curCoId,type:document.getElementById('i-type').value,ts:dv?new Date(dv).getTime():Date.now(),subject,content:document.getElementById('i-content').value.trim(),outcome:document.getElementById('i-outcome').value.trim(),next:document.getElementById('i-next').value.trim(),nextDate:ndv?new Date(ndv).getTime():null};interactions.push(int);const ns=document.getElementById('i-status').value;if(ns){const i=companies.findIndex(c=>c.id===curCoId);if(i>=0){companies[i].status=ns;companies[i].updatedAt=Date.now()}}save();closeModal('m-int');renderDetail(curCoId);toast('Interacción registrada ✓')}
+// INTERACTIONS
+function openAddInteraction(){
+  const co=companies.find(c=>c.id===curCoId);
+  document.getElementById('int-co-name').textContent=co?`${SEC[co.sector]||'🏢'} ${co.name}`:'';
+  const now=new Date(),loc=new Date(now-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  document.getElementById('i-date').value=loc;
+  ['i-subject','i-content','i-outcome','i-next','i-duration'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('i-next-date').value='';document.getElementById('i-type').value='email';document.getElementById('i-status').value='';
+  document.getElementById('btn-open-email').style.display='block';document.getElementById('i-duration-wrap').style.display='none';
+  openModal('m-int');
+}
+function onIntTypeChange(v){
+  document.getElementById('btn-open-email').style.display=v==='email'?'block':'none';
+  document.getElementById('i-duration-wrap').style.display=['llamada','reunion','videollamada'].includes(v)?'block':'none';
+}
+function saveInteraction(){
+  const subject=document.getElementById('i-subject').value.trim();if(!subject){toast('El asunto es obligatorio','err');return}
+  const dv=document.getElementById('i-date').value,ndv=document.getElementById('i-next-date').value;
+  const int={id:uid(),coId:curCoId,type:document.getElementById('i-type').value,ts:dv?new Date(dv).getTime():Date.now(),subject,content:document.getElementById('i-content').value.trim(),outcome:document.getElementById('i-outcome').value.trim(),next:document.getElementById('i-next').value.trim(),nextDate:ndv?new Date(ndv).getTime():null,duration:document.getElementById('i-duration').value||null};
+  interactions.push(int);
+  const ns=document.getElementById('i-status').value;
+  if(ns){const i=companies.findIndex(c=>c.id===curCoId);if(i>=0){companies[i].status=ns;companies[i].updatedAt=Date.now()}}
+  save();closeModal('m-int');renderDetail(curCoId);toast('Interacción registrada ✓')
+}
 function openEmailFromInt(){closeModal('m-int');openEmailModal(curCoId)}
-
 // EMAIL TEMPLATES
-function openEmailModal(id){curCoId=id;const co=companies.find(c=>c.id===id)||{};const to=co.contactEmail||'';const cn=co.contactName||'';const nm=co.name||'';document.getElementById('em-to').textContent=to||'(sin email)';
-const from='info@premiosred.com';
-const tpls=[
-  {n:'📬 Presentación inicial',s:`PremiosRed — Propuesta de colaboración · ${nm}`,b:`Estimado/a ${cn},\n\nMe pongo en contacto con usted desde PremiosRed para presentarle una oportunidad de colaboración premium que podría ofrecer un valor diferencial a sus clientes.\n\nPremiosRed es un sistema de packs de premios desde 6€, válido en 17 países, con sorteos de hasta 20.000€. Distribuimos a través de canales de transporte, hostelería y retail.\n\nMe gustaría agendar una breve llamada para presentarle la propuesta en detalle. ¿Tendría disponibilidad esta semana?\n\nQuedo a su disposición.\n\nAtentamente,\nPremiosRed | ${from}`},
-  {n:'📩 Seguimiento (follow-up)',s:`Seguimiento propuesta PremiosRed · ${nm}`,b:`Estimado/a ${cn},\n\nMe permito contactarle de nuevo en relación a la propuesta que le envié hace unos días sobre PremiosRed.\n\n¿Ha tenido oportunidad de revisarla? Quedo a su disposición para resolver cualquier duda o ampliar información.\n\nAtentamente,\nPremiosRed | ${from}`},
-  {n:'💼 Propuesta económica',s:`Propuesta económica PremiosRed × ${nm}`,b:`Estimado/a ${cn},\n\nAdjunto la propuesta económica detallada para nuestra colaboración con PremiosRed.\n\n[COMPLETAR CON LOS DETALLES DE LA PROPUESTA]\n\nQuedo a su disposición para cualquier aclaración.\n\nAtentamente,\nPremiosRed | ${from}`},
-  {n:'🤝 Confirmación acuerdo',s:`¡Confirmado! Colaboración PremiosRed × ${nm}`,b:`Estimado/a ${cn},\n\nEs un placer confirmar nuestro acuerdo de colaboración. A continuación los próximos pasos:\n\n1. [Paso 1]\n2. [Paso 2]\n3. [Paso 3]\n\nEstaremos en contacto para coordinar todos los detalles.\n\nMuchas gracias por su confianza.\n\nAtentamente,\nPremiosRed | ${from}`},
-];
-document.getElementById('em-tpls').innerHTML=tpls.map(t=>{const ml=`mailto:${to}?subject=${encodeURIComponent(t.s)}&body=${encodeURIComponent(t.b)}`;return`<div class="card card-sm mb8"><div class="fw700 f13 mb4">${t.n}</div><div class="f11 clr-muted mb8">${t.s}</div><a href="${ml}" class="btn btn-gold btn-sm" style="display:inline-flex;text-decoration:none">Abrir en email →</a></div>`}).join('');
-openModal('m-email')}
-
-// EXPORT CSV
-function exportCSV(){if(!companies.length){toast('No hay datos para exportar','err');return}const h=['ID','Empresa','Sector','País','Ciudad','Web','Contacto','Email','Tel','Estado','Prioridad','Notas','Creado','Actualizado','Nº Logs'];const rows=[h,...companies.map(c=>[c.id,c.name,c.sector,c.country,c.city,c.website,c.contactName,c.contactEmail,c.contactPhone,c.status,c.priority,(c.notes||'').replace(/\n/g,' '),c.createdAt?new Date(c.createdAt).toLocaleDateString('es-ES'):'',c.updatedAt?new Date(c.updatedAt).toLocaleDateString('es-ES'):'',interactions.filter(i=>i.coId===c.id).length])];const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`PremiosRed_CRM_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exportado ✓')}
-
-// IMPORT CSV
-function importCSV(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('CSV vacío','err');return}let imported=0;lines.slice(1).forEach(line=>{const cols=line.match(/(".*?"|[^,]+)(?=,|$)/g)||[];const clean=cols.map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"'));if(!clean[1])return;const co={id:clean[0]&&!companies.find(c=>c.id===clean[0])?clean[0]:uid(),name:clean[1]||'',sector:clean[2]||'otro',country:clean[3]||'España',city:clean[4]||'',website:clean[5]||'',contactName:clean[6]||'',contactEmail:clean[7]||'',contactPhone:clean[8]||'',status:clean[9]||'prospecto',priority:clean[10]||'media',notes:clean[11]||'',createdAt:Date.now(),updatedAt:Date.now()};if(!companies.find(c=>c.id===co.id)){companies.push(co);imported++}});save();renderCompanies();toast(`${imported} empresas importadas ✓`)}catch(ex){toast('Error leyendo CSV','err')}};r.readAsText(f,'UTF-8');input.value=''}
-
-// PWA
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+function openEmailModal(id){
+  curCoId=id;const co=companies.find(c=>c.id===id)||{};
+  const to=co.contactEmail||'',cn=co.contactName||'',nm=co.name||'';
+  document.getElementById('em-to').textContent=to||'(sin email registrado)';
+  const from='info@premiosred.com';
+  const tpls=[
+    {n:'📬 Presentación inicial',s:`PremiosRed — Propuesta de colaboración · ${nm}`,b:`Estimado/a ${cn},\n\nMe pongo en contacto con usted desde PremiosRed para presentarle una oportunidad de colaboración que podría ofrecer un valor diferencial a sus clientes.\n\n🏆 ¿Qué es PremiosRed?\nPremiosRed es un sistema de packs de premios desde 6€, válido en 17 países europeos, con sorteos de hasta 20.000€. El 2% de cada venta se destina a causas solidarias como AECC o Cruz Roja.\n\n📦 Packs disponibles:\n• Pack Tecnología (€6) — Premio 3.500€ Apple\n• Pack Moda (€7) — Premio 4.500€ Zara\n• Pack Cosmética (€8) — Premio 5.500€ Kiko Milano\n• Pack Caribe (€9) — Viaje Caribe 6.500€\n\n✅ Para su empresa, esto supone:\n• Ingreso adicional por cada pack distribuido\n• Sin coste ni riesgo: nosotros gestionamos todo\n• Experiencia premium para sus clientes\n\nMe gustaría agendar una breve llamada de 15 minutos para presentarle la propuesta en detalle. ¿Tendría disponibilidad esta semana?\n\nQuedo a su disposición.\n\nAtentamente,\nPremiosRed\n${from}\nwww.premiosred.com`},
+    {n:'📩 Follow-up (seguimiento)',s:`Seguimiento propuesta PremiosRed · ${nm}`,b:`Estimado/a ${cn},\n\nMe permito contactarle de nuevo en relación a la propuesta de colaboración que le envié hace unos días.\n\n¿Ha tenido oportunidad de revisarla? Estaré encantado de resolver cualquier duda o adaptar la propuesta a las necesidades de ${nm}.\n\nRecuerde que PremiosRed ya opera en 17 países y tiene colaboradores activos en el sector ${co.sector||''}.\n\nQuedo a su disposición para cuando lo considere oportuno.\n\nAtentamente,\nPremiosRed | ${from}`},
+    {n:'💼 Propuesta económica',s:`Propuesta económica PremiosRed × ${nm}`,b:`Estimado/a ${cn},\n\nTal como acordamos, adjunto la propuesta económica detallada para nuestra colaboración.\n\n💰 CONDICIONES PROPUESTAS:\n• Comisión por pack distribuido: [X%]\n• Mínimo packs/mes: [N unidades]\n• Método de distribución: [IFE / QR / rack / display]\n• Vigencia inicial del acuerdo: 12 meses\n\n📋 PRÓXIMOS PASOS:\n1. Revisión de la propuesta (esta semana)\n2. Llamada de alineación (15-20 min)\n3. Firma del acuerdo de colaboración\n4. Implementación técnica\n\nNo dude en contactarme para cualquier ajuste.\n\nAtentamente,\nPremiosRed | ${from}`},
+    {n:'✅ Confirmación acuerdo',s:`¡Colaboración confirmada! PremiosRed × ${nm}`,b:`Estimado/a ${cn},\n\nEs un placer confirmar nuestro acuerdo de colaboración. Bienvenido/a a la familia PremiosRed.\n\n📋 PRÓXIMOS PASOS:\n1. Firma del contrato (adjunto)\n2. Configuración técnica: [fecha acordada]\n3. Formación del equipo: [fecha acordada]\n4. Lanzamiento: [fecha acordada]\n\nEstaremos en contacto continuo durante el proceso de implementación.\n\n¡Estamos encantados de trabajar juntos!\n\nAtentamente,\nPremiosRed | ${from}`},
+  ];
+  document.getElementById('em-tpls').innerHTML=tpls.map(t=>{const ml=`mailto:${to}?subject=${encodeURIComponent(t.s)}&body=${encodeURIComponent(t.b)}`;return`<div class="card card-sm mb8"><div class="fw700 f13 mb4">${t.n}</div><div class="f11 clr-muted mb8" style="line-height:1.4">${t.s}</div><a href="${ml}" class="btn btn-gold btn-sm" style="display:inline-flex;text-decoration:none">Abrir en email →</a></div>`}).join('');
+  openModal('m-email');
+}
+// EXPORT/IMPORT CSV
+function exportCSV(){
+  if(!companies.length){toast('No hay datos','err');return}
+  const h=['ID','Empresa','Sector','País','Ciudad','Web','Contacto','Cargo','Email','Tel','Estado','Prioridad','Cobertura','Comision%','MinPacks','Distribución','Creado','Actualizado','Nº Logs'];
+  const rows=[h,...companies.map(c=>[c.id,c.name,c.sector,c.country,c.city,c.website,c.contactName,c.crole,c.contactEmail,c.contactPhone,c.status,c.priority,c.coverage,c.commission,c.minpacks,c.distrib,c.createdAt?new Date(c.createdAt).toLocaleDateString('es-ES'):'',c.updatedAt?new Date(c.updatedAt).toLocaleDateString('es-ES'):'',interactions.filter(i=>i.coId===c.id).length])];
+  const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`PremiosRed_CRM_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exportado ✓')
+}
+function exportJSON(){
+  const data={companies,interactions,exportedAt:new Date().toISOString()};
+  const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2));a.download=`PremiosRed_CRM_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Backup JSON descargado ✓')
+}
+function importCSV(input){
+  const f=input.files[0];if(!f)return;const r=new FileReader();
+  r.onload=e=>{try{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('CSV vacío','err');return}
+    let imp=0;lines.slice(1).forEach(line=>{const cols=line.match(/(".*?"|[^,]+)(?=,|$)/g)||[];const cl=cols.map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"').trim());if(!cl[1])return;const co={id:uid(),name:cl[1]||'',sector:cl[2]||'otro',country:cl[3]||'España',city:cl[4]||'',website:cl[5]||'',contactName:cl[6]||'',crole:cl[7]||'',contactEmail:cl[8]||'',contactPhone:cl[9]||'',status:cl[10]||'prospecto',priority:cl[11]||'media',coverage:cl[12]||'',commission:cl[13]||'',minpacks:cl[14]||'',distrib:cl[15]||'',createdAt:Date.now(),updatedAt:Date.now(),docs:{}};companies.push(co);imp++});
+    save();renderCompanies();toast(`${imp} empresas importadas ✓`)}catch(ex){toast('Error al leer CSV','err')}};
+  r.readAsText(f,'UTF-8');input.value='';
+}
+// SETTINGS
+function renderSettings(){
+  prevNav=curNav==='settings'?prevNav:curNav;
+  document.getElementById('settings-body').innerHTML=`
+    <div class="card mb12"><div class="sec-title mb10">👤 Perfil</div>
+      <div class="fgrp"><label class="flbl">Tu nombre</label><input class="finp" id="cfg-name" value="${esc(cfg.name||'')}" placeholder="Luis"></div>
+      <div class="fgrp"><label class="flbl">Email remitente</label><input class="finp" id="cfg-email" value="${esc(cfg.email||'info@premiosred.com')}" type="email"></div>
+      <button class="btn btn-gold" onclick="saveCfg()">💾 Guardar</button>
+    </div>
+    <div class="card mb12"><div class="sec-title mb10">🗃 Datos</div>
+      <div class="row wrap" style="gap:8px">
+        <button class="btn btn-cyan btn-sm" onclick="exportCSV()">⬇ Exportar CSV</button>
+        <button class="btn btn-cyan btn-sm" onclick="exportJSON()">⬇ Backup JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆ Importar CSV</button>
+      </div>
+      <div class="f12 clr-dim mt8">Empresas: ${companies.length} · Logs: ${interactions.length}</div>
+    </div>
+    <div class="card mb12"><div class="sec-title mb10">🌐 GitHub Pages</div>
+      <div class="f13 clr-muted mb8">Tu CRM está publicado en:</div>
+      <a href="https://luismcantero.github.io/premiosred-crm/" target="_blank" class="f13 clr-cyan" style="word-break:break-all">https://luismcantero.github.io/premiosred-crm/</a>
+    </div>
+    <div class="card mb12"><div class="sec-title mb10 clr-danger">⚠️ Zona peligrosa</div>
+      <button class="btn btn-danger btn-sm" onclick="confirm2('Borrar todos los datos','Esta acción borra TODAS las empresas e interacciones. No se puede deshacer.',()=>{companies=[];interactions=[];save();toast('Datos borrados');renderSettings()})">🗑 Borrar todos los datos</button>
+    </div>
+    <div class="safe"></div>`;
+}
+function saveCfg(){cfg.name=document.getElementById('cfg-name').value.trim();cfg.email=document.getElementById('cfg-email').value.trim();save();toast('Guardado ✓')}
+// INIT
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-bg.show').forEach(m=>m.classList.remove('show'))});
-load();renderDash();
-document.getElementById('dash-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+load();onSectorChange('aerolinea');renderDash();
 </script></body></html>
