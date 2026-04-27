@@ -610,5 +610,117 @@ document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-bg.show').forEach(m=>m.classList.remove('show'))});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 load();onSectorChange('aerolinea');renderDash();
+// EMAIL THREAD PATCH v3.1
+// Override openAddInteraction to add email-specific fields
+const _origOpen = openAddInteraction;
+function openAddInteraction(){
+  _origOpen();
+  renderEmailExtraFields(document.getElementById('i-type').value);
+}
+function onIntTypeChange(v){
+  document.getElementById('btn-open-email').style.display=v==='email'?'block':'none';
+  document.getElementById('i-duration-wrap').style.display=['llamada','reunion','videollamada'].includes(v)?'block':'none';
+  renderEmailExtraFields(v);
+}
+function renderEmailExtraFields(v){
+  let el=document.getElementById('email-extra');
+  if(!el){el=document.createElement('div');el.id='email-extra';document.getElementById('i-next').parentElement.before(el)}
+  if(v!=='email'){el.innerHTML='';return}
+  const co=companies.find(c=>c.id===curCoId)||{};
+  el.innerHTML=`
+    <div class="fgrp"><label class="flbl">Dirección</label>
+      <div style="display:flex;gap:8px">
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:12px;background:var(--card);border:1px solid var(--bcyan);border-radius:var(--rs);cursor:pointer">
+          <input type="radio" name="idir" value="enviado" checked style="accent-color:var(--gold)"> <span class="f14">📤 Enviado</span></label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:12px;background:var(--card);border:1px solid var(--bcyan);border-radius:var(--rs);cursor:pointer">
+          <input type="radio" name="idir" value="recibido" style="accent-color:var(--cyan)"> <span class="f14">📥 Recibido</span></label>
+      </div></div>
+    <div class="grid2">
+      <div class="fgrp"><label class="flbl">Para / De</label><input class="finp" id="i-to" placeholder="${co.contactEmail||'email@empresa.com'}" value="${co.contactEmail||''}"></div>
+      <div class="fgrp"><label class="flbl">CC</label><input class="finp" id="i-cc" placeholder="cc@empresa.com"></div>
+    </div>
+    <div class="fgrp"><label class="flbl">Cuerpo completo del email</label><textarea class="finp" id="i-body" style="min-height:120px" placeholder="Pega aquí el cuerpo completo del email enviado o recibido..."></textarea></div>
+    <div class="fgrp"><label class="flbl">Adjuntos enviados/recibidos</label><input class="finp" id="i-attachments" placeholder="Dossier PremiosRed.pdf, Propuesta Iberia.pdf..."></div>
+  `;
+}
+// Override saveInteraction to include email fields
+const _origSave = saveInteraction;
+saveInteraction = function(){
+  const type=document.getElementById('i-type').value;
+  if(type==='email'){
+    const dir=document.querySelector('input[name="idir"]:checked')?.value||'enviado';
+    const to=document.getElementById('i-to')?.value.trim()||'';
+    const cc=document.getElementById('i-cc')?.value.trim()||'';
+    const body=document.getElementById('i-body')?.value.trim()||'';
+    const attachments=document.getElementById('i-attachments')?.value.trim()||'';
+    // Store in hidden fields for _origSave to pick up — patch content field
+    const contentEl=document.getElementById('i-content');
+    if(contentEl&&!contentEl.value.trim()&&body)contentEl.value=body;
+    // We'll monkey-patch by adding extra data after save
+    const prevLen=interactions.length;
+    _origSave();
+    // If a new interaction was added, enrich it
+    const newInt=interactions.find(i=>i.coId===curCoId&&interactions.indexOf(i)>=prevLen-1&&i.type==='email');
+    if(newInt){newInt.emailDir=dir;newInt.emailTo=to;newInt.emailCc=cc;newInt.emailBody=body||newInt.content;newInt.emailAttachments=attachments?attachments.split(',').map(s=>s.trim()).filter(Boolean):[];save()}
+  } else {
+    _origSave();
+  }
+};
+// Override renderDetail to show email thread
+const _origRenderDetail = renderDetail;
+renderDetail = function(id){
+  _origRenderDetail(id);
+  // Re-render interaction section with email thread
+  const ints=interactions.filter(i=>i.coId===id).sort((a,b)=>b.ts-a.ts);
+  const emailInts=ints.filter(i=>i.type==='email');
+  if(!emailInts.length) return;
+  // Find the tl div and enhance email rows
+  setTimeout(()=>{
+    document.querySelectorAll('.int-row').forEach((row,idx)=>{
+      const int=ints[idx];
+      if(!int||int.type!=='email')return;
+      const dir=int.emailDir||'enviado';
+      const isEnv=dir==='enviado';
+      row.style.background=isEnv?'rgba(245,166,35,0.04)':'rgba(56,189,248,0.04)';
+      row.style.borderLeft=`3px solid ${isEnv?'var(--gold)':'var(--cyan)'}`;
+      row.style.borderRadius='8px';row.style.padding='10px';row.style.marginBottom='6px';
+      // Add email meta if exists
+      if(int.emailTo||int.emailAttachments?.length){
+        const meta=document.createElement('div');
+        meta.style.cssText='margin-top:6px;padding:8px;background:rgba(0,0,0,0.2);border-radius:6px';
+        meta.innerHTML=`${int.emailTo?`<div class="f11 clr-dim mb2">${isEnv?'📤 Para':'📥 De'}: <span class="clr-muted">${int.emailTo}</span>${int.emailCc?` · CC: ${int.emailCc}`:''}</div>`:''}${int.emailBody&&int.emailBody!==int.content?`<div class="f12 clr-muted mb4" style="white-space:pre-wrap;max-height:160px;overflow-y:auto">${esc(int.emailBody)}</div>`:''}${int.emailAttachments?.length?`<div class="f11 clr-dim">📎 ${int.emailAttachments.map(a=>`<span style="background:rgba(245,166,35,0.12);padding:2px 7px;border-radius:6px;margin-right:4px;color:var(--gold)">${a}</span>`).join('')}</div>`:''}`;
+        row.appendChild(meta);
+      }
+    });
+  },50);
+};
+// Auto-log when email template is used
+const _origEmail=openEmailModal;
+openEmailModal=function(id){
+  _origEmail(id);
+  // Add auto-log button to each template
+  setTimeout(()=>{
+    document.querySelectorAll('#em-tpls .btn-gold').forEach(btn=>{
+      const card=btn.closest('.card');
+      if(!card||card.dataset.patched)return;
+      card.dataset.patched='1';
+      const logBtn=document.createElement('button');
+      logBtn.className='btn btn-ghost btn-xs';logBtn.style.marginLeft='8px';logBtn.textContent='+ Log CRM';
+      const subj=card.querySelector('.f11')?.textContent||'';
+      const href=btn.getAttribute('href')||'';
+      const bodyMatch=href.match(/body=([^&]*)/);
+      const body=bodyMatch?decodeURIComponent(bodyMatch[1]):'';
+      const toMatch=href.match(/^mailto:([^?]*)/);
+      const to=toMatch?toMatch[1]:'';
+      logBtn.onclick=(e)=>{e.stopPropagation();autoLogEmail(id,subj,body,to);closeModal('m-email');toast('Email registrado en CRM ✓')};
+      btn.parentElement.appendChild(logBtn);
+    });
+  },100);
+};
+function autoLogEmail(coId,subject,body,to){
+  const int={id:uid(),coId,type:'email',ts:Date.now(),subject:subject||'Email enviado',content:body.slice(0,300),emailDir:'enviado',emailTo:to,emailCc:'',emailBody:body,emailAttachments:[],outcome:'',next:'',nextDate:null};
+  interactions.push(int);save();if(curCoId===coId)renderDetail(coId);
+}
 </script></body></html>
+
 
