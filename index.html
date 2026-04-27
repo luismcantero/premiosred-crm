@@ -829,7 +829,290 @@ renderDetail = function(id){
     }
   },30);
 };
+// ===== PATCH v4: Score + Inactividad + Tiempo etapa + Objetivo diario =====
+
+// SCORE: calcula calor de empresa basado en actividad reciente
+function getScore(co){
+  const ints=interactions.filter(i=>i.coId===co.id);
+  if(!ints.length)return{level:'cold',emoji:'❄️',label:'Frío',color:'var(--dim)'};
+  const lastTs=Math.max(...ints.map(i=>i.ts));
+  const days=daysDiff(Date.now()-(Date.now()-lastTs)); // days since last contact
+  const daysSince=Math.round((Date.now()-lastTs)/864e5);
+  const activeStages=['reunion','propuesta','negociando','contrato'];
+  if(['firmado','activo'].includes(co.status))return{level:'signed',emoji:'✅',label:'Firmado',color:'var(--success)'};
+  if(daysSince<=3&&activeStages.includes(co.status))return{level:'hot',emoji:'🔥',label:'Caliente',color:'#FF4500'};
+  if(daysSince<=7)return{level:'warm',emoji:'🌡️',label:'Tibio',color:'var(--warn)'};
+  if(daysSince<=21)return{level:'cool',emoji:'🌬️',label:'Templado',color:'var(--cyan)'};
+  return{level:'cold',emoji:'❄️',label:'Frío',color:'var(--dim)'};
+}
+
+// DAYS SINCE LAST CONTACT
+function daysSinceContact(co){
+  const ints=interactions.filter(i=>i.coId===co.id);
+  if(!ints.length)return null;
+  const last=Math.max(...ints.map(i=>i.ts));
+  return Math.round((Date.now()-last)/864e5);
+}
+
+// TIME IN CURRENT STAGE
+function timeInStage(co){
+  if(!co.stageChangedAt)return null;
+  const days=Math.round((Date.now()-co.stageChangedAt)/864e5);
+  if(days===0)return'hoy';
+  if(days===1)return'1 día';
+  return`${days} días`;
+}
+
+// DAILY GOAL - read/write from cfg
+function getDailyGoal(){return parseInt(cfg.dailyGoal)||5}
+function getTodayCount(){const h=new Date();h.setHours(0,0,0,0);return interactions.filter(i=>new Date(i.ts)>=h).length}
+
+// Override renderCompanies to add score + inactividad badge
+const __origRC=renderCompanies;
+renderCompanies=function(q){
+  __origRC(q);
+  // Enhance each co-row with score and inactivity
+  setTimeout(()=>{
+    document.querySelectorAll('.co-row').forEach(row=>{
+      const onclick=row.getAttribute('onclick')||'';
+      const m=onclick.match(/goToDetail\('([^']+)'\)/);
+      if(!m)return;
+      const co=companies.find(c=>c.id===m[1]);
+      if(!co)return;
+      const score=getScore(co);
+      const dsc=daysSinceContact(co);
+      const inactive=dsc!==null&&dsc>=7&&!['firmado','activo','descartado'].includes(co.status);
+      // Add score emoji to company name area
+      const nameEl=row.querySelector('.co-name');
+      if(nameEl&&!nameEl.dataset.scored){
+        nameEl.dataset.scored='1';
+        const scoreSpan=document.createElement('span');
+        scoreSpan.title=score.label;
+        scoreSpan.style.cssText=`font-size:14px;margin-left:4px`;
+        scoreSpan.textContent=score.emoji;
+        nameEl.appendChild(scoreSpan);
+      }
+      // Add inactivity warning
+      if(inactive&&!row.querySelector('.inactive-warn')){
+        const warn=document.createElement('span');
+        warn.className='inactive-warn';
+        warn.style.cssText='font-size:10px;font-weight:800;color:var(--danger);background:rgba(239,68,68,0.1);padding:2px 7px;border-radius:8px;border:1px solid rgba(239,68,68,0.25)';
+        warn.textContent=`⚠️ ${dsc}d sin contacto`;
+        const metaRow=row.querySelector('.row.wrap');
+        if(metaRow)metaRow.appendChild(warn);
+      }
+    });
+  },60);
+};
+
+// Override renderDetail to add time-in-stage and score
+const __origRD2=renderDetail;
+renderDetail=function(id){
+  __origRD2(id);
+  setTimeout(()=>{
+    const co=companies.find(c=>c.id===id);if(!co)return;
+    const score=getScore(co);
+    const tis=timeInStage(co);
+    const dsc=daysSinceContact(co);
+    const hdr=document.getElementById('det-body');
+    if(!hdr)return;
+    const firstCard=hdr.querySelector('.card');
+    if(!firstCard||firstCard.dataset.enriched)return;
+    firstCard.dataset.enriched='1';
+    const infoDiv=document.createElement('div');
+    infoDiv.style.cssText='display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)';
+    infoDiv.innerHTML=`
+      <span style="font-size:12px;font-weight:700;color:${score.color};background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.09)">${score.emoji} ${score.label}</span>
+      ${tis?`<span style="font-size:12px;color:var(--muted);background:rgba(255,255,255,0.05);padding:3px 10px;border-radius:10px;border:1px solid var(--border)">⏱ En etapa: ${tis}</span>`:''}
+      ${dsc!==null?`<span style="font-size:12px;color:${dsc>=7?'var(--danger)':'var(--muted)'};background:rgba(255,255,255,0.05);padding:3px 10px;border-radius:10px;border:1px solid var(--border)">📅 Último contacto: ${dsc===0?'hoy':dsc+'d'}</span>`:''}
+    `;
+    firstCard.appendChild(infoDiv);
+  },60);
+};
+
+// Track stage change date when saving company
+const __origSC=saveCompany;
+saveCompany=function(){
+  const id=editId;
+  const oldStatus=id?companies.find(c=>c.id===id)?.status:null;
+  const newStatus=document.getElementById('f-status')?.value;
+  __origSC();
+  // If status changed, record timestamp
+  if(id&&oldStatus&&newStatus&&oldStatus!==newStatus){
+    const co=companies.find(c=>c.id===id);
+    if(co){co.stageChangedAt=Date.now();save()}
+  } else if(!id){
+    // New company
+    const co=companies[companies.length-1];
+    if(co){co.stageChangedAt=Date.now();save()}
+  }
+};
+
+// Track stage change on interaction save
+const __origSI=saveInteraction;
+saveInteraction=function(){
+  const coId=curCoId;
+  const oldStatus=companies.find(c=>c.id===coId)?.status;
+  __origSI();
+  const newStatus=companies.find(c=>c.id===coId)?.status;
+  if(oldStatus&&newStatus&&oldStatus!==newStatus){
+    const co=companies.find(c=>c.id===coId);
+    if(co){co.stageChangedAt=Date.now();save()}
+  }
+};
+
+// DAILY GOAL widget on dashboard
+const __origRD_dash=renderDash;
+renderDash=function(){
+  __origRD_dash();
+  setTimeout(()=>{
+    const feed=document.getElementById('dash-feed');
+    if(!feed||document.getElementById('daily-goal-widget'))return;
+    const goal=getDailyGoal();const done=getTodayCount();const pct=Math.min(100,Math.round(done/goal*100));
+    const widget=document.createElement('div');
+    widget.id='daily-goal-widget';
+    widget.style.cssText='background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:var(--rs);padding:12px 14px;margin-bottom:12px';
+    widget.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+        <span style="font-size:13px;font-weight:800;color:var(--purple)">🎯 Objetivo diario</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:auto">${done} / ${goal} contactos</span>
+        <button onclick="promptGoal()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:11px">✏️</button>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--success)':'var(--indigo)'};border-radius:4px;transition:width 0.6s ease"></div>
+      </div>
+      ${pct>=100?`<div style="font-size:11px;color:var(--success);margin-top:5px;font-weight:700">🏆 ¡Objetivo alcanzado hoy!</div>`:`<div style="font-size:11px;color:var(--dim);margin-top:5px">Faltan ${goal-done} más para hoy</div>`}
+    `;
+    const statsEl=document.getElementById('dash-stats');
+    if(statsEl)statsEl.after(widget);
+  },80);
+};
+
+function promptGoal(){
+  const v=prompt('Objetivo diario de contactos:',getDailyGoal());
+  if(v&&parseInt(v)>0){cfg.dailyGoal=parseInt(v);save();renderDash();toast('Objetivo actualizado ✓')}
+}
+
+// UNDO DELETE
+let _undoTimer=null,_undoData=null;
+const __origDel=deleteCompany;
+deleteCompany=function(id){
+  const co=companies.find(c=>c.id===id);
+  const ints=interactions.filter(i=>i.coId===id);
+  _undoData={co,ints};
+  companies=companies.filter(c=>c.id!==id);
+  interactions=interactions.filter(i=>i.coId!==id);
+  save();goBack();
+  // Show undo toast
+  const t=document.getElementById('toast');
+  t.innerHTML='Empresa eliminada &nbsp;<strong style="cursor:pointer;text-decoration:underline" onclick="undoDelete()">DESHACER (5s)</strong>';
+  t.className='toast info show';
+  clearTimeout(_undoTimer);
+  _undoTimer=setTimeout(()=>{_undoData=null;t.classList.remove('show');},5000);
+};
+function undoDelete(){
+  if(!_undoData)return;
+  companies.push(_undoData.co);
+  _undoData.ints.forEach(i=>interactions.push(i));
+  save();_undoData=null;clearTimeout(_undoTimer);
+  document.getElementById('toast').classList.remove('show');
+  nav('co');toast('Empresa restaurada ✓');
+}
+// ===== PATCH v4.2: LinkedIn + Maps + WhatsApp plantilla + Pitch por sector =====
+
+// PITCH NOTES por sector
+const PITCH_SECTOR={
+  aerolinea:{titulo:'✈️ Pitch Aerolíneas',puntos:['IFE = pantalla cautiva: pasajero tiene 2h sin nada que hacer','Pack desde €6 = impulso de compra bajo coste','No requiere espacio físico — solo integración digital IFE','2% solidario = diferenciador RSC para la compañía','17 países = compatible con rutas internacionales']},
+  autobus:{titulo:'🚌 Pitch Autobús',puntos:['Viajes 4-8h = cliente busca entretenimiento','Pantalla del bus o QR en el asiento = sin fricción','Bajo coste de implementación','Diferencial frente a competidores sin experiencia extra','Pack Caribe €9 = aspiracional para viajero de largo recorrido']},
+  hotel:{titulo:'🏨 Pitch Hoteles',puntos:['Check-in = momento de máxima receptividad','Display en recepción o tablet en habitación','Complemento perfecto a paquetes de bienvenida','RSC: 2% va a AECC o Cruz Roja — comunicable al huésped','Funciona en 17 países para cadenas internacionales']},
+  bar:{titulo:'🍺 Pitch Bares/Restaurantes',puntos:['Sobremesa = momento ideal de compra impulsiva','QR en mesa o display en barra','Ticket medio aumenta sin inversión en stock','Sorteo de hasta €20.000 = conversación en la mesa','Pack Tecnología €6 = accesible para cualquier cliente']},
+  retail:{titulo:'🏪 Pitch Retail',puntos:['Complemento en punto de caja = compra impulsiva','Sin necesidad de espacio adicional','Margen por pack distribuido sin coste de adquisición','Diferencial frente a competidores','Apto para cadenas: escalable a todos los puntos de venta']},
+  crucero:{titulo:'🚢 Pitch Cruceros',puntos:['Cliente cautivo 7-14 días = múltiples momentos de compra','Pantallas en camarotes y zonas comunes','Premium experiencia = compatible con concepto crucero','Packs de regalo ideales entre pasajeros','17 países = compatible con rutas mediterráneas y caribe']},
+  tren:{titulo:'🚂 Pitch Trenes',puntos:['Trayectos 1-4h = momento de compra tranquilo','Pantalla en asiento o QR integrado en billete','Sin necesidad de personal adicional','Alta frecuencia de pasajeros = alto potencial de volumen','AVE/Alvia = cliente con poder adquisitivo alto']},
+};
+
+// Override openEmailModal to add WhatsApp template
+const __origEM2=openEmailModal;
+openEmailModal=function(id){
+  __origEM2(id);
+  setTimeout(()=>{
+    const tplsEl=document.getElementById('em-tpls');
+    if(!tplsEl||tplsEl.dataset.waAdded)return;
+    tplsEl.dataset.waAdded='1';
+    const co=companies.find(c=>c.id)||{};
+    const phone=(companies.find(c=>c.id===id)||{}).contactPhone||'';
+    const name=(companies.find(c=>c.id===id)||{}).name||'';
+    const cn=(companies.find(c=>c.id===id)||{}).contactName||'';
+    if(phone){
+      const waTxt=encodeURIComponent(`Hola ${cn}, soy Luis de PremiosRed. Me gustaría presentarle brevemente nuestra propuesta de colaboración para ${name}. ¿Tendría 5 minutos esta semana? 🏆`);
+      const waDiv=document.createElement('div');
+      waDiv.className='card card-sm mb8';
+      waDiv.style.borderColor='rgba(37,211,102,0.3)';
+      waDiv.innerHTML=`<div class="fw700 f13 mb4">💬 WhatsApp presentación</div><div class="f11 clr-muted mb8">Mensaje corto de contacto inicial vía WhatsApp</div><a href="https://wa.me/${phone.replace(/[^0-9]/g,'')}?text=${waTxt}" target="_blank" class="btn btn-sm" style="display:inline-flex;text-decoration:none;background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);color:#25D366">Abrir WhatsApp →</a>`;
+      tplsEl.insertBefore(waDiv,tplsEl.firstChild);
+    }
+    // Add pitch notes
+    const co2=companies.find(c=>c.id===id);
+    const pitch=co2?PITCH_SECTOR[co2.sector]:null;
+    if(pitch){
+      const pitchDiv=document.createElement('div');
+      pitchDiv.className='card card-sm mb8';
+      pitchDiv.style.borderColor='rgba(99,102,241,0.28)';
+      pitchDiv.innerHTML=`<div class="fw700 f13 mb8" style="color:var(--purple)">${pitch.titulo}</div>${pitch.puntos.map(p=>`<div class="f12 clr-muted mb4">• ${p}</div>`).join('')}`;
+      tplsEl.insertBefore(pitchDiv,tplsEl.firstChild);
+    }
+  },120);
+};
+
+// Override renderDetail to add LinkedIn/Maps links
+const __origRD3=renderDetail;
+renderDetail=function(id){
+  __origRD3(id);
+  setTimeout(()=>{
+    const co=companies.find(c=>c.id===id);if(!co)return;
+    const firstCard=document.getElementById('det-body')?.querySelector('.card');
+    if(!firstCard||firstCard.dataset.links)return;
+    firstCard.dataset.links='1';
+    const linksDiv=document.createElement('div');
+    linksDiv.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-top:10px';
+    const city=co.city||co.country||'';
+    const name=co.name||'';
+    linksDiv.innerHTML=`
+      ${city?`<a href="https://www.google.com/maps/search/${encodeURIComponent(name+' '+city)}" target="_blank" class="btn btn-ghost btn-xs" style="text-decoration:none">📍 Maps</a>`:''}
+      <a href="https://www.linkedin.com/company/${encodeURIComponent(name.toLowerCase().replace(/\s+/g,'-'))}" target="_blank" class="btn btn-ghost btn-xs" style="text-decoration:none;color:#0A66C2">in LinkedIn</a>
+      ${co.website?`<a href="${co.website.startsWith('http')?co.website:'https://'+co.website}" target="_blank" class="btn btn-ghost btn-xs" style="text-decoration:none">🌐 Web</a>`:''}
+      ${co.contactPhone?`<a href="https://wa.me/${co.contactPhone.replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola, soy Luis de PremiosRed, me pongo en contacto sobre una propuesta de colaboración.')}" target="_blank" class="btn btn-ghost btn-xs" style="text-decoration:none;color:#25D366">💬 WA</a>`:''}
+    `;
+    firstCard.appendChild(linksDiv);
+  },70);
+};
+
+// WEEKLY SUMMARY on dashboard
+const __origRDash2=renderDash;
+renderDash=function(){
+  __origRDash2();
+  setTimeout(()=>{
+    if(document.getElementById('weekly-summary'))return;
+    const week=new Date(Date.now()-7*864e5);
+    const intW=interactions.filter(i=>new Date(i.ts)>=week);
+    const companiesW=new Set(intW.map(i=>i.coId)).size;
+    const div=document.createElement('div');
+    div.id='weekly-summary';
+    div.style.cssText='background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-radius:var(--rs);padding:11px 14px;margin-bottom:12px';
+    div.innerHTML=`<div class="f11 fw800 clr-cyan mb6" style="letter-spacing:1px;text-transform:uppercase">📊 Esta semana</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div><div class="f18 fw900 clr-cyan">${intW.length}</div><div class="f10 clr-dim">interacciones</div></div>
+        <div><div class="f18 fw900" style="color:var(--gold)">${companiesW}</div><div class="f10 clr-dim">empresas contactadas</div></div>
+        <div><div class="f18 fw900 clr-success">${interactions.filter(i=>{const co=companies.find(c=>c.id===i.coId);return co&&['firmado','activo'].includes(co.status)&&new Date(co.updatedAt||0)>=week}).length}</div><div class="f10 clr-dim">firmados/activados</div></div>
+      </div>`;
+    const goalWidget=document.getElementById('daily-goal-widget');
+    if(goalWidget)goalWidget.after(div);
+    else{const statsEl=document.getElementById('dash-stats');if(statsEl)statsEl.after(div);}
+  },100);
+};
 </script></body></html>
+
+
 
 
 
