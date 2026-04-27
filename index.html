@@ -111,7 +111,29 @@ textarea.finp{resize:vertical;min-height:72px;line-height:1.5}
 .mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt12{margin-top:12px}.tc{text-align:center}
 #import-file{display:none}
 @media(min-width:600px){.cnt{max-width:580px;margin:0 auto}.modal{border-radius:20px;margin-bottom:40px}.modal-bg{align-items:center}.fab{right:calc(50% - 274px)}}
-</style></head><body>
+<style id="thread-css">
+.thread-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.thread-msg{border-radius:14px;padding:13px 15px;position:relative;max-width:100%}
+.thread-msg.sent{background:rgba(245,166,35,0.09);border:1px solid rgba(245,166,35,0.25);border-bottom-right-radius:4px;margin-left:16px}
+.thread-msg.recv{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.22);border-bottom-left-radius:4px;margin-right:16px}
+.thread-msg.manual{background:rgba(129,140,248,0.07);border:1px solid rgba(129,140,248,0.20);border-radius:10px;margin:0 8px}
+.thread-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.thread-dir{font-size:11px;font-weight:800;letter-spacing:0.5px}
+.sent .thread-dir{color:var(--gold)}
+.recv .thread-dir{color:var(--cyan)}
+.manual .thread-dir{color:var(--purple)}
+.thread-time{font-size:11px;color:var(--dim);margin-left:auto}
+.thread-to{font-size:11px;color:var(--muted)}
+.thread-subj{font-size:14px;font-weight:800;margin-bottom:5px}
+.thread-body{font-size:13px;color:var(--muted);line-height:1.55;white-space:pre-wrap;max-height:200px;overflow-y:auto;margin-bottom:7px}
+.thread-body.collapsed{max-height:60px;overflow:hidden;mask-image:linear-gradient(to bottom,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 60%,transparent 100%)}
+.thread-expand{font-size:11px;color:var(--cyan);cursor:pointer;font-weight:700;margin-bottom:7px}
+.attach-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.attach-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(245,166,35,0.12);color:var(--gold);border:1px solid rgba(245,166,35,0.22)}
+.recv .attach-chip{background:rgba(56,189,248,0.10);color:var(--cyan);border-color:rgba(56,189,248,0.22)}
+.thread-call{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);font-size:13px}
+.thread-note{padding:10px 13px;background:rgba(129,140,248,0.06);border-left:3px solid var(--purple);border-radius:0 var(--rs) var(--rs) 0;font-size:13px;color:var(--muted)}
+</style></style></head><body>
 <div id="app">
 <!-- SCREEN DASHBOARD -->
 <div class="scr act" id="s-dash">
@@ -721,6 +743,93 @@ function autoLogEmail(coId,subject,body,to){
   const int={id:uid(),coId,type:'email',ts:Date.now(),subject:subject||'Email enviado',content:body.slice(0,300),emailDir:'enviado',emailTo:to,emailCc:'',emailBody:body,emailAttachments:[],outcome:'',next:'',nextDate:null};
   interactions.push(int);save();if(curCoId===coId)renderDetail(coId);
 }
+// THREAD RENDERER — replaces interaction section in detail
+function renderThreadSection(id){
+  const ints = interactions.filter(i=>i.coId===id).sort((a,b)=>a.ts-b.ts); // oldest first for thread
+  if(!ints.length) return '<div class="empty"><div class="empty-icon">💬</div><div class="empty-msg">Sin interacciones.<br>Toca <strong style="color:var(--cyan)">+ Log</strong>.</div></div>';
+  
+  return '<div class="thread-wrap">' + ints.map(i=>{
+    const dt = new Date(i.ts).toLocaleString('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    
+    if(i.type==='email'){
+      const dir = i.emailDir||'enviado';
+      const isSent = dir==='enviado';
+      const bodyTxt = i.emailBody||i.content||'';
+      const isLong = bodyTxt.length>280;
+      const atts = i.emailAttachments||[];
+      const intId = i.id;
+      return `<div class="thread-msg ${isSent?'sent':'recv'}">
+        <div class="thread-meta">
+          <span class="thread-dir">${isSent?'📤 Enviado':'📥 Recibido'}</span>
+          ${i.emailTo?`<span class="thread-to">${isSent?'Para':'De'}: ${esc(i.emailTo)}${i.emailCc?` · CC: ${esc(i.emailCc)}`:''}</span>`:''}
+          <span class="thread-time">📅 ${dt}</span>
+        </div>
+        ${i.subject?`<div class="thread-subj">${esc(i.subject)}</div>`:''}
+        ${bodyTxt?`<div class="thread-body ${isLong?'collapsed':''}" id="body-${intId}">${esc(bodyTxt)}</div>${isLong?`<span class="thread-expand" onclick="expandBody('body-${intId}',this)">▼ Ver completo</span>`:''}`:''}
+        ${i.outcome?`<div class="f12 mt4"><span class="clr-dim">Resultado: </span>${esc(i.outcome)}</div>`:''}
+        ${i.next?`<div class="f12 mt4"><span class="clr-gold">→ </span><strong>${esc(i.next)}</strong>${i.nextDate?` <span class="clr-dim">(${fmtD(i.nextDate)})</span>`:''}</div>`:''}
+        ${atts.length?`<div class="attach-wrap">${atts.map(a=>`<span class="attach-chip">📎 ${esc(a)}</span>`).join('')}</div>`:''}
+      </div>`;
+    }
+    
+    if(['llamada','videollamada'].includes(i.type)){
+      return `<div class="thread-call">
+        <span style="font-size:18px">${IT[i.type]||'📞'}</span>
+        <div class="flex1"><div class="fw700 f13">${esc(i.subject||i.type)}</div>${i.outcome?`<div class="f12 clr-muted">${esc(i.outcome)}</div>`:''}</div>
+        <div style="text-align:right"><div class="f11 clr-dim">${dt}</div>${i.duration?`<div class="f11 clr-muted">${i.duration} min</div>`:''}</div>
+      </div>`;
+    }
+    
+    if(i.type==='whatsapp'){
+      return `<div class="thread-msg sent" style="background:rgba(37,211,102,0.07);border-color:rgba(37,211,102,0.20)">
+        <div class="thread-meta"><span class="thread-dir" style="color:#25D366">💬 WhatsApp</span><span class="thread-time">📅 ${dt}</span></div>
+        ${i.subject?`<div class="fw700 f13 mb4">${esc(i.subject)}</div>`:''}
+        ${i.content?`<div class="f13 clr-muted">${esc(i.content)}</div>`:''}
+        ${i.next?`<div class="f12 mt4"><span style="color:#25D366">→ </span><strong>${esc(i.next)}</strong></div>`:''}
+      </div>`;
+    }
+    
+    // nota / reunion / resto
+    return `<div class="thread-note">
+      <div class="row mb4"><span>${IT[i.type]||'📝'} <strong class="f12">${i.type==='nota'?'Nota interna':i.type==='reunion'?'Reunión':i.type}</strong></span><span class="f11 clr-dim" style="margin-left:auto">${dt}</span></div>
+      ${i.subject?`<div class="fw700 f13 mb4">${esc(i.subject)}</div>`:''}
+      ${i.content?`<div class="f13">${esc(i.content)}</div>`:''}
+      ${i.outcome?`<div class="f12 mt4 clr-muted">Resultado: ${esc(i.outcome)}</div>`:''}
+      ${i.next?`<div class="f12 mt4 clr-gold">→ ${esc(i.next)}${i.nextDate?` <span class="clr-dim">(${fmtD(i.nextDate)})</span>`:''}</div>`:''}
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function expandBody(elId,btn){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.classList.remove('collapsed');
+  btn.remove();
+}
+
+// Patch renderDetail to inject thread section
+const __origRD = typeof renderDetail === 'function' ? renderDetail : ()=>{};
+renderDetail = function(id){
+  __origRD(id);
+  setTimeout(()=>{
+    // Replace the tl/empty section with thread view
+    const det=document.getElementById('det-body');
+    if(!det)return;
+    // Find and remove old tl div and replace with thread
+    const tl=det.querySelector('.tl');
+    const emptyEl=det.querySelector('.empty');
+    const target=tl||emptyEl;
+    if(target){
+      const threadDiv=document.createElement('div');
+      const ints=interactions.filter(i=>i.coId===id);
+      const label=det.querySelector('.sec-title');
+      if(label)label.closest('.row')?.querySelector('.clr-dim') && (det.querySelector('.row .clr-dim').textContent=`${ints.length} registro${ints.length!==1?'s':''}`);
+      threadDiv.innerHTML=renderThreadSection(id);
+      target.replaceWith(threadDiv.firstChild||threadDiv);
+    }
+  },30);
+};
 </script></body></html>
+
 
 
